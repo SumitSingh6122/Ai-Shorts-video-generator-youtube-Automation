@@ -42,16 +42,16 @@ const VideoList = () => {
     return (
         <div>
             {videoList?.length ==0  ? 
-                <div className='flex flex-col items-center justify-center mt-28 gap-5 border border-dashed p-5 rounded-xl py-16'>
+                <div className='flex flex-col  items-center justify-center mt-28 gap-5 border border-dashed p-5 rounded-xl py-16'>
                     <Image src={'/logo.svg'} alt='Logo' height={60} width={60} /> 
                     <h2 className='text-gray-400 text-lg'>You don&apos;t have any videos created.</h2>
                     <Link href={'/create-new-video'}>
                         <Button>+ Create New Video</Button>
                     </Link>
-                </div> :<div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mt-10'>
-                    { videoList?.map((vid,index)=>(  
+                </div> :<div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mt-1 gap-5'>
+                    { videoList?.map((vid,index:number)=>(  
                        <Link key={index} href={'/play-video/'+vid?._id}>
-                        <div className='relative' >
+                        <div className='relative ' >
                            {vid.status=='completed'  ? 
                             <Image src={vid.image[0]} alt={vid.title} height={500} width={500} 
                             className='w-full object-cover rounded-xl aspect-[2/3]  '/> :

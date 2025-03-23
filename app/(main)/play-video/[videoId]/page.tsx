@@ -37,7 +37,7 @@ const PlayVideo = () => {
    <RemotionPlayer videoData={videodata} />
         </div>
         <div>
-   <VideoInfo/>
+   <VideoInfo videoData={videodata}/>
         </div>
     </div>
   )

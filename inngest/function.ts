@@ -72,8 +72,9 @@ export const GenerateVideodata=inngest.createFunction(
                 const prompt=ImagePrompt.replace('{style}',VideoStyle).replace('{script}',script);
                 const result=await GenerateImageScript.sendMessage(prompt)
                 const resp=JSON.parse(result.response.text());
-
+                console.log(resp);
                 return resp;
+               
             }
         )
         const GenerateImages=await step.run(
@@ -81,7 +82,7 @@ export const GenerateVideodata=inngest.createFunction(
             async()=>{
                 let images=[];
                 images=await Promise.all(
-                    GenerateImagePrompt.map(async(item)=>{
+                    GenerateImagePrompt.map(async(item:{imagePrompt:string})=>{
                         const result = await axios.post(BASE_URL+'/api/generate-image',
                             {
                                 width: 1024,

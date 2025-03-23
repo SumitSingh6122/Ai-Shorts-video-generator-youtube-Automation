@@ -58,7 +58,7 @@ const RemotionComposition: React.FC<RemotionProps> = ({ videoData, setDurationIn
   if (isLoading) {
     return (
       <AbsoluteFill className="flex items-center justify-center bg-black text-white">
-        Loading Images...
+        Loading Video...
       </AbsoluteFill>
     );
   }
