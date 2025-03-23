@@ -4,7 +4,7 @@ import { useAuthContext } from '@/app/provider';
 import { Button } from '@/components/ui/button';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
-import { useConvex, useMutation, useQuery } from 'convex/react';
+import { useConvex,  useQuery } from 'convex/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -14,11 +14,16 @@ import { RefreshCcw } from 'lucide-react';
 const VideoList = () => {
     
     const { user } = useAuthContext();
-    const refreshVideos = useMutation(api.videoData.GetUserVideos);
+
+    const RefreshVideos =()=>{ 
+        
+        return useQuery(api.videoData.GetUserVideos, user ? { uid: user._id as Id<"user"> } : "skip");
+        
+    }
     const videoList = useQuery(api.videoData.GetUserVideos, user ? { uid: user._id as Id<"user"> } : "skip");
     const ispendingSatus=videoList?.find((item)=>item.status=='pending');
      const convex=useConvex();
-    const GetPendingVideoStatus=(ispendingSatus)=>{
+    const GetPendingVideoStatus=(ispendingSatus :{_id:Id<'videoData'>})=>{
     const intervalId=setInterval(async()=>{
       const result=await convex.query(api.videoData.VideoStatus,
         {
@@ -26,7 +31,7 @@ const VideoList = () => {
         })
         if(result?.status=='completed'){
        clearInterval(intervalId);
-       refreshVideos();
+       RefreshVideos();
        
         }
       

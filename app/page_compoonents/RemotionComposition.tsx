@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+"use client"
+import React, { useEffect, useMemo, useState } from 'react';
 import { VideoData } from '../type';
 import { AbsoluteFill, Audio, Img, interpolate, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
+
 
 interface RemotionProps {
   videoData: VideoData | null;
@@ -8,8 +10,9 @@ interface RemotionProps {
 }
 
 const RemotionComposition: React.FC<RemotionProps> = ({ videoData, setDurationInFrame }) => {
-  const captions = videoData?.captionJson || [];
-  const ImageList = videoData?.image || [];
+
+  const captions = useMemo(()=>videoData?.captionJson || [],[videoData]);
+  const ImageList = useMemo(()=>videoData?.image || [],[videoData]);
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +27,7 @@ const RemotionComposition: React.FC<RemotionProps> = ({ videoData, setDurationIn
     }
   }, [captions, fps, setDurationInFrame]);
 
-  // Preload all images
+  
   useEffect(() => {
     const preloadImages = async () => {
       try {
@@ -59,10 +62,17 @@ const RemotionComposition: React.FC<RemotionProps> = ({ videoData, setDurationIn
       </AbsoluteFill>
     );
   }
+ const captionStyle=videoData?.caption_Style;
 
   const getDuration = Math.ceil(captions[captions.length - 1].end * fps);
+  const getCaption=()=>{
+    const currentTime=frame/fps;
+    const currentCaption=captions.find((item)=>currentTime>=item.start && currentTime<=item.end);
+    return currentCaption? currentCaption.word:'';
+  }
 
   return (
+    <div>
     <AbsoluteFill>
       {ImageList.map((item, index) => {
         const startTime = Math.round((index * getDuration) / ImageList.length);
@@ -91,8 +101,23 @@ const RemotionComposition: React.FC<RemotionProps> = ({ videoData, setDurationIn
           </Sequence>
         );
       })}
-      {videoData?.audioURL && <Audio src={videoData.audioURL} />}
+      
     </AbsoluteFill>
+    <AbsoluteFill
+    style={{
+      color:'white',
+      justifyContent:'center',
+      bottom:50,
+     top:950,
+      height:150,
+      textAlign:'center'
+      
+    }}
+    >
+      <h2 className={`${captionStyle} `}>{getCaption()}</h2>
+    </AbsoluteFill>
+    {videoData?.audioURL && <Audio src={videoData.audioURL} />}
+    </div>
   );
 };
 

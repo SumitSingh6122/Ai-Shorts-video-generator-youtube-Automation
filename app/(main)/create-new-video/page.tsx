@@ -77,7 +77,7 @@ const CreateNewVideo = () => {
     }
     return (
         <div>
-            <h2 className='text-3xl'>Create New Video</h2>
+            <h2 className='text-4xl'>Create New Video</h2>
             <div className='grid md:grid-cols-3 grid-cols-1 mt-8 gap-7'>
 
                 <div className='col-span-2 p-7 border rounded-xl h-[70vh] overflow-auto'>

@@ -6,7 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 type CaptionItem = {
   start: number; 
   end: number;     
-  text: string;
+  word: string;
 };
 
 

@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={tr}>
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={outfit.className}
       >
