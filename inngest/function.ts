@@ -30,7 +30,7 @@ export const GenerateVideodata=inngest.createFunction(
     {id:'generate-video-data'},
     {event:'generate-video-data'},
     async({event,step})=>{
-        const {script,topic,title,caption_name,caption_Style,VideoStyle,Voice ,recordId,credits}=event.data;
+        const {script,VideoStyle,Voice ,recordId}=event.data;
         const convex=new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
         const GenerateAudiofile=await step.run(
             "GenerateAudiofile",
