@@ -10,7 +10,8 @@ const ConvexClientProvider :React.FC<props > =({children}) => {
    const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
   return (
      <ConvexProvider client={convex}>
-      <Provider>{children}</Provider>
+      <Provider>
+        {children}</Provider>
       
         </ConvexProvider>
   )

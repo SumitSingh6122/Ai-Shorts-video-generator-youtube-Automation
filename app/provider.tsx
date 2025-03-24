@@ -53,7 +53,7 @@ const Provider: React.FC<ProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{user}}>
-      <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         {children}
       </NextThemesProvider>
     </AuthContext.Provider>
