@@ -68,12 +68,17 @@ const CreateNewVideo = () => {
 
         })
         console.log(res);
-        const resp = await axios.post('/api/generate-video-data', {
-            ...formData,
-            recordId:res
-        })
-        console.log(resp);
-        setloading(false);
+        try {
+            const resp = await axios.post('/api/generate-video-data', {
+                ...formData,
+                recordId:res
+            })
+            console.log(resp);
+            setloading(false);
+        } catch (error) {
+             console.log(error);
+        }
+       
     }
     return (
         <div>
