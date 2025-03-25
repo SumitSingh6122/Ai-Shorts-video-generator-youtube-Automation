@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body
         className={outfit.className}
-      ><NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      ><NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <ConvexClientProvider>
 
         {children}
