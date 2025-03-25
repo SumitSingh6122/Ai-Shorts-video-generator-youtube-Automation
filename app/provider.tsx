@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode, useContext, useEffect, useState } from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./config/firebase";
 import { AuthContext } from "./context/AuthContext";
@@ -53,9 +53,9 @@ const Provider: React.FC<ProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{user}}>
-    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+    
         {children}
-      </NextThemesProvider>
+      
     </AuthContext.Provider>
   );
 };
