@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Gem, HomeIcon, LucideFileVideo, Search, WalletCards } from "lucide-react";
+import { Gem, HomeIcon, LucideFileVideo, Search, ShieldCheck, WalletCards, Youtube } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ export function AppSidebar() {
   const MenuItem = [
     { title: "Home", url: "/dashboard", icon: HomeIcon },
     { title: "Create New Video", url: "/create-new-video", icon: LucideFileVideo },
+    { title: "YouTube Upload", url: "/youtube-upload", icon: Youtube }, // Add this line
     { title: "Explore", url: "/explore", icon: Search },
     { title: "Billing", url: "/billing", icon: WalletCards },
   ];
@@ -65,8 +66,17 @@ export function AppSidebar() {
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
+          { user?.role=="admin" &&
+                 <div className="mx-5 mt-10">
+                 <Link href={'/admin'}>
+                 <Button className="w-full "><ShieldCheck className="ml-2 h-5 w-5" /> Admin Dashboard</Button>
+                 </Link>
+               </div>
+          }
+       
         </SidebarGroup>
         <SidebarGroup />
+        
       </SidebarContent>
       <SidebarFooter>
         <div className="p-5 border rounded-lg bg-gray-800 mb-5">

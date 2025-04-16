@@ -1,8 +1,4 @@
-
-
 import { Id } from "@/convex/_generated/dataModel";
-
-// Type for Caption Item
 type CaptionItem = {
   start: number; 
   end: number;     
@@ -26,5 +22,6 @@ type CaptionItem = {
   caption_Style: string;
   caption_name: string;
   uid: string;
+  DowloadURL?: string;
 };
 

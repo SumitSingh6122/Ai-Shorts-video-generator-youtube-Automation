@@ -1,14 +1,62 @@
+"use client";
 import { VideoData } from '@/app/type';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, DownloadIcon } from 'lucide-react'
+import axios from 'axios';
+import { ArrowLeft, DownloadIcon, LucideYoutube } from 'lucide-react'
 import Link from 'next/link';
-import React from 'react'
+import React, { useState } from 'react'
 
 
 interface VideoDataType {
   videoData: VideoData | null;
 }
 const VideoInfo:React.FC<VideoDataType> = ({videoData}) => {
+
+  const [loading, setLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!videoData?.DowloadURL) {
+      alert('Video is not ready for download yet. Please wait for rendering to complete.');
+      return;
+    }
+
+    try {
+      setDownloadLoading(true);
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = videoData.DowloadURL;
+      link.download = `${videoData.title}.mp4`; // Set the filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download video');
+    } finally {
+      setDownloadLoading(false);
+    }
+  };
+
+  const handleUploadToYouTube = async () => {
+    if (!videoData) return alert('No video data available');
+
+    try {
+      setLoading(true);
+      const response = await axios.post('/api/upload-to-youtube', {
+        title: videoData.title,
+        description: videoData.script,
+        videoUrl: videoData.audioURL,
+      });
+
+      alert(response.data.message);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className='p-5 border rounded-xl '>
       <Link href={'/dashboard'}>
@@ -18,8 +66,18 @@ const VideoInfo:React.FC<VideoDataType> = ({videoData}) => {
       <h2 className='mt-5'>Project Name:  {videoData?.title}</h2>
       <p>Video Script :  {videoData?.script}</p>
       <h2>Video Style :  {videoData?.videoStyle}</h2>
-      <Button className='w-full flex gap-2'><DownloadIcon/> Export &nbsp;  &  &nbsp; Download</Button>
-      </div>
+      <Button 
+        onClick={handleDownload}
+        disabled={downloadLoading || !videoData?.DowloadURL}
+        className='w-full flex gap-2 font-semibold'
+      >
+        <DownloadIcon/> 
+        {downloadLoading ? 'Downloading...' : 'Export & Download'}
+      </Button>
+      <Button onClick={handleUploadToYouTube} disabled={loading} className='w-full flex gap-2 text-black font-semibold'>
+          <LucideYoutube className='text-[40px] text-red-500' /> {loading ? 'Uploading...' : 'Upload on YouTube'}
+        </Button>
+        </div>
     </div>
   )
 }

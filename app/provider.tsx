@@ -16,6 +16,8 @@ interface UserType{
     email: string;
     pictureUrl: string;
     credits: number;
+    isActive:boolean;
+    role:string;
  
 }
 
@@ -41,7 +43,10 @@ const Provider: React.FC<ProviderProps> = ({ children }) => {
             name: result.name,
             email: result.email,
             pictureUrl: result.pictureUrl || "",
-            credits: result.credits });
+            credits: result.credits,
+            isActive:result.isActive || false,
+            role:result.role || 'user',
+          });
         } catch (error) {
           console.error("Error creating user:", error);
         }

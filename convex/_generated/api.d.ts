@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as user from "../user.js";
 import type * as videoData from "../videoData.js";
+import type * as vsitors from "../vsitors.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -27,6 +28,7 @@ import type * as videoData from "../videoData.js";
 declare const fullApi: ApiFromModules<{
   user: typeof user;
   videoData: typeof videoData;
+  vsitors: typeof vsitors;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

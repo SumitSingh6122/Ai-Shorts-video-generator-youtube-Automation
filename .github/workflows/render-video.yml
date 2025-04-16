@@ -1,0 +1,96 @@
+name: Render Remotion Video and Upload to Cloud Storage
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: 'ID of the video to render'
+        required: true
+        type: string
+      composition_id:
+        description: 'Remotion composition ID'
+        required: true
+        default: 'MyVideo'
+        type: string
+      duration_in_frames:
+        description: 'Duration in frames'
+        required: false
+        default: '60'
+        type: string
+      fps:
+        description: 'Frames per second'
+        required: false
+        default: '30'
+        type: string
+
+jobs:
+  render-upload-store:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTION_VERSION: 4.0.287
+      COMPOSITION_ID: ${{ github.event.inputs.composition_id }}
+      VIDEO_ID: ${{ github.event.inputs.video_id }}
+      DURATION_IN_FRAMES: ${{ github.event.inputs.duration_in_frames }}
+      FPS: ${{ github.event.inputs.fps }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_UPLOAD_PRESET: ${{ secrets.CLOUDINARY_UPLOAD_PRESET }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      CONVEX_DEPLOYMENT_URL: ${{ secrets.CONVEX_DEPLOYMENT_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application
+        run: npm run build
+
+      - name: Start Remotion server
+        run: |
+          npx remotion start --port 3000 &
+          echo "Waiting for Remotion server to start..."
+          sleep 10
+          echo "Remotion server started"
+
+      - name: Render the video
+        run: |
+          mkdir -p out
+          npx remotion render http://localhost:3000 $COMPOSITION_ID out/video.mp4 --frames=$DURATION_IN_FRAMES --fps=$FPS
+          echo "Video rendered successfully"
+
+      - name: Upload to Cloudinary
+        run: |
+          curl -X POST "https://api.cloudinary.com/v1_1/${{ env.CLOUDINARY_CLOUD_NAME }}/video/upload" \
+            -u "${{ env.CLOUDINARY_API_KEY }}:${{ env.CLOUDINARY_API_SECRET }}" \
+            -F "file=@out/video.mp4" \
+            -F "upload_preset=${{ env.CLOUDINARY_UPLOAD_PRESET }}" > cloudinary_response.json
+          echo "Video uploaded to Cloudinary"
+
+      - name: Extract Cloudinary secure URL
+        id: extract_url
+        run: |
+          echo "video_url=$(jq -r '.secure_url' cloudinary_response.json)" >> $GITHUB_ENV
+          echo "Video URL: ${{ env.video_url }}"
+
+      - name: Store video URL in Convex
+        run: |
+          curl -X POST "${{ env.CONVEX_DEPLOYMENT_URL }}/api/save-video-url" \
+            -H "Content-Type: application/json" \
+            -d '{"videoId": "${{ env.VIDEO_ID }}", "url": "${{ env.video_url }}"}'
+          echo "Video URL stored in Convex"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f "remotion start" || true
+          echo "Cleanup completed"

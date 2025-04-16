@@ -1,6 +1,6 @@
 import axios from "axios";
 import { inngest } from "./client";
-import {createClient} from '@deepgram/sdk'
+import {createClient} from '@deepgram/sdk';
 import { GenerateImageScript } from "@/app/config/AIModel";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
@@ -78,6 +78,7 @@ export const GenerateVideodata=inngest.createFunction(
             }
         )
         const GenerateImages=await step.run(
+            
             "GenerateImages",
             async()=>{
                 let images=[];
@@ -105,6 +106,9 @@ export const GenerateVideodata=inngest.createFunction(
 
             }
         ) 
+
+       
+       
 
     await step.run(
             "UpdateDatabase",

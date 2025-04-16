@@ -13,6 +13,7 @@ const RemotionPlayer: React.FC<RemotionPlayerProps> = ({ videoData }) => {
   return (
     <div className="flex justify-center items-center">
       <Player
+      
         component={RemotionComposition}
         durationInFrames={Math.ceil(durationInFrames)}
         compositionWidth={720}

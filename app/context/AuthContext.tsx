@@ -7,6 +7,8 @@ export interface AuthContextType {
     email: string;
     pictureUrl: string;
     credits: number;
+    isActive:boolean;
+    role:string;
   } | null; 
 }
 

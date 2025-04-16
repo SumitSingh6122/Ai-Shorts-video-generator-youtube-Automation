@@ -41,6 +41,7 @@ export const UpdateVideoData=mutation({
         image:v.any(),
         captionJson:v.any(),
         audioURL:v.any(),
+      
         
     },
     handler:async(ctx,args)=>{
@@ -48,6 +49,7 @@ export const UpdateVideoData=mutation({
             audioURL:args.audioURL,
             captionJson:args.captionJson,
             image:args.image,
+            
             status:"completed"
         });
         return result;
@@ -71,3 +73,17 @@ export const VideoStatus=query({
         return result;
     }
 })
+export const GetTotalVideos=query(async({db})=>{
+   return await db.query('videoData').collect();
+});
+export const saveVideoDownloadUrl = mutation({
+    args: {
+      videoId: v.id("videoData"),
+      url: v.string(),
+    },
+    handler: async (ctx, args) => {
+      await ctx.db.patch(args.videoId, {
+        DowloadURL: args.url,
+      });
+    },
+  });

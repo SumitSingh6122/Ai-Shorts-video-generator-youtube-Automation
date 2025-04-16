@@ -3,6 +3,8 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import ConvexClientProvider from "./ConvexClientProvider";
+import { ToastContainer } from 'react-toastify';
+import { VisitorTracker } from "./(main)/_component/VisitorTracker";
 
 
 
@@ -21,9 +23,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body
         className={outfit.className}
-      ><NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      ><NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <ConvexClientProvider>
-
+        <ToastContainer position="top-center" />
+        <VisitorTracker/>
         {children}
 
         </ConvexClientProvider>
