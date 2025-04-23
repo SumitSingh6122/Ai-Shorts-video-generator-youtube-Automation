@@ -18,7 +18,7 @@ export default defineSchema({
         caption_name:v.string(),
         caption_Style:v.string(),
         Voice:v.string(),
-        DowloadURL:v.optional(v.string()),
+        DownloadURL:v.optional(v.string()),
         image:v.optional(v.any()),
         captionJson:v.optional(v.any()),
         audioURL:v.optional(v.any()),

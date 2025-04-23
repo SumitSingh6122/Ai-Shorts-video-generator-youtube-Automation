@@ -5,39 +5,73 @@ import React, { useState } from 'react'
 interface TopicProps {
     onHandleInputChange: (fieldName: string, fieldValue:string) => void;
 }
-
 const voiceOption = [
     {
-      "value": "af_sarah",
-      "name": "Sarah",
-      "flagUrl": "https://flagcdn.com/w40/us.png",  // Using flag CDN
-      "gender": "Female"
+      value: "21m00Tcm4TlvDq8ikWAM", // Rachel (US)
+      name: "Rachel",
+      flagUrl: "https://flagcdn.com/w40/us.png",
+      gender: "Female",
+      language: "English"
     },
     {
-      "value": "af_sky",
-      "name": "Sky",
-      "flagUrl": "https://flagcdn.com/w40/us.png",
-      "gender": "Female"
+      value: "AZnzlk1XvdvUeBnXmlld", // Domi (US)
+      name: "Domi",
+      flagUrl: "https://flagcdn.com/w40/us.png",
+      gender: "Female",
+      language: "English"
     },
     {
-      "value": "am_adam",
-      "name": "Adam",
-      "flagUrl": "https://flagcdn.com/w40/us.png",
-      "gender": "Male"
+      value: "EXAVITQu4vr4xnSDxMaL", // Bella (US)
+      name: "Bella",
+      flagUrl: "https://flagcdn.com/w40/us.png",
+      gender: "Female",
+      language: "English"
     },
     {
-      "value": "hf_alpha",
-      "name": "Alpha",
-      "flagUrl": "https://flagcdn.com/w40/in.png",
-      "gender": "Female"
+      value: "ErXwobaYiN019PkySvjV", // Josh (US)
+      name: "Josh",
+      flagUrl: "https://flagcdn.com/w40/us.png",
+      gender: "Male",
+      language: "English"
     },
     {
-      "value": "hf_beta",
-      "name": "Beta",
-      "flagUrl": "https://flagcdn.com/w40/in.png",
-      "gender": "Female"
+      value: "MF3mGyEYCl7XYWbV9V6O", // Arnold (US)
+      name: "Arnold",
+      flagUrl: "https://flagcdn.com/w40/us.png",
+      gender: "Male",
+      language: "English"
+    },
+    {
+      value: "pNInz6obpgDQGcFmaJgB", // Indian English Male (custom if added)
+      name: "Amit",
+      flagUrl: "https://flagcdn.com/w40/in.png",
+      gender: "Male",
+      language: "Indian English"
+    },
+    {
+      value: "yoZ06aMxZJJ28mfd3POQ", // Indian English Female (custom if added)
+      name: "Asha",
+      flagUrl: "https://flagcdn.com/w40/in.png",
+      gender: "Female",
+      language: "Indian English"
+    },
+    {
+      value: "TxGEqnHWrfWFTfGW9XjX", // Hindi Male
+      name: "Arya",
+      flagUrl: "https://flagcdn.com/w40/in.png",
+      gender: "Male",
+      language: "Hindi"
+    },
+    {
+      value: "VR6AewLTigWG4xSOukaG", // Hindi Female
+      name: "Swati",
+      flagUrl: "https://flagcdn.com/w40/in.png",
+      gender: "Female",
+      language: "Hindi"
     }
-];
+  ];
+  
+
 
 const Voice: React.FC<TopicProps> = ({onHandleInputChange}) => {
     const [selectVoiceIndex, setSelectVoiceIndex] = useState<number | null>(null);
@@ -67,6 +101,10 @@ const Voice: React.FC<TopicProps> = ({onHandleInputChange}) => {
                                     className="rounded-sm"
                                 />
                                 <span>{voice.name}</span>
+                                <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white">
+  {voice.language}
+</span>
+
                                 <span className="text-sm text-gray-400">({voice.gender})</span>
                             </h2>
                         </div>

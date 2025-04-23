@@ -4,6 +4,8 @@ import {createClient} from '@deepgram/sdk';
 import { GenerateImageScript } from "@/app/config/AIModel";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import cloudinary from "@/lib/cloundary";
+
 
 const ImagePrompt=`Generate a Image prompt of {style} style with all details for each scene for 30 seconds video :script :{script}
 -Just Give specifing image prompt depends on the story line
@@ -30,26 +32,51 @@ export const GenerateVideodata=inngest.createFunction(
     {id:'generate-video-data'},
     {event:'generate-video-data'},
     async({event,step})=>{
-        const {script,VideoStyle,Voice ,recordId}=event.data;
+        const {script,VideoStyle,Voice,CaptionStyle ,recordId}=event.data;
         const convex=new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-        const GenerateAudiofile=await step.run(
-            "GenerateAudiofile",
-            async()=>{
-                const result = await axios.post(BASE_URL+'/api/text-to-speech',
-                    {
-                        input:script,
-                        voice: Voice
-                    },
-                    {
-                        headers: {
-                            'x-api-key':process.env.NEXT_PUBLIC_GURU_API_KEY, 
-                            'Content-Type': 'application/json', 
-                        },
-                    })
-                 console.log(result.data.audio) 
-                 return result.data.audio;
+        
+
+        const GenerateAudiofile = await step.run("GenerateAudiofile", async () => {
+          const response = await axios.post(
+            `https://api.elevenlabs.io/v1/text-to-speech/${Voice}`,
+            {
+              text: script,
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.75,
+              },
+            },
+            {
+              responseType: 'arraybuffer',
+              headers: {
+                'xi-api-key': process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY!,
+                'Content-Type': 'application/json',
+              },
             }
-        )
+          );
+        
+          const audioBuffer = Buffer.from(response.data);
+        
+          const uploadResp = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+              {
+                resource_type: 'video', // audio/video goes here
+                folder: 'generated_audio',
+                public_id: `audio_${Date.now()}`,
+                format: 'mp3',
+              },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              }
+            ).end(audioBuffer);
+          });
+        
+          return (uploadResp as any).secure_url; // return URL
+        });
+        
+        
+        
         const GenerateCaptionFile=await step.run(
             'GenerateCaptionFile',
             async()=>{
@@ -94,11 +121,12 @@ export const GenerateVideodata=inngest.createFunction(
                             },
                             {
                                 headers: {
-                                    'x-api-key': process.env.NEXT_PUBLIC_GURU_API_KEY,
+                                    'x-api-key': '6f6f987c-e47e-4934-be57-0a719c859278',
                                     'Content-Type': 'application/json', 
                                 },
                             })
-                    console.log(result.data.image) 
+                        
+                    console.log(result) 
                     return result.data.image;
                     })
                 )
@@ -124,6 +152,44 @@ export const GenerateVideodata=inngest.createFunction(
 
             }
         )
+
+
+      const RenderVideo=await step.run(
+        "render Video",
+        async()=>{ 
+          const response=await axios.post('https://video-rendring.onrender.com/api/render', {
+              inputProps: {videoData:{
+                audioURL: GenerateAudiofile,
+                captionJson:GenerateCaptionFile,
+                image:GenerateImages,
+                CaptionStyle:CaptionStyle,
+            }
+                
+              },
+            })
+           
+      if (!response.data.success) {
+        throw new Error(`Render failed: ${response.data.error}`);
+      }
+
+      return response.data.downloadUrl;
+    });
+
+    await step.run(
+      "UpdateDatabase_Url",
+      async()=>{ 
+        const res=await convex.mutation(api.videoData.saveVideoDownloadUrl,{
+          videoId:recordId,
+          url:RenderVideo
+        })
+     return res;
+
+      }
+  )
+
+           
+          
+      
 
       return "Executed Succesfully!";
     }

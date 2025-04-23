@@ -76,14 +76,16 @@ export const VideoStatus=query({
 export const GetTotalVideos=query(async({db})=>{
    return await db.query('videoData').collect();
 });
-export const saveVideoDownloadUrl = mutation({
+
+  export const saveVideoDownloadUrl = mutation({
     args: {
       videoId: v.id("videoData"),
       url: v.string(),
     },
     handler: async (ctx, args) => {
       await ctx.db.patch(args.videoId, {
-        DowloadURL: args.url,
+        DownloadURL: args.url, 
       });
     },
   });
+  

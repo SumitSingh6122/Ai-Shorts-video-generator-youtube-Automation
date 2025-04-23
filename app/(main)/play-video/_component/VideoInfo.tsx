@@ -16,7 +16,7 @@ const VideoInfo:React.FC<VideoDataType> = ({videoData}) => {
   const [downloadLoading, setDownloadLoading] = useState(false);
 
   const handleDownload = async () => {
-    if (!videoData?.DowloadURL) {
+    if (!videoData?.DownloadURL) {
       alert('Video is not ready for download yet. Please wait for rendering to complete.');
       return;
     }
@@ -25,7 +25,7 @@ const VideoInfo:React.FC<VideoDataType> = ({videoData}) => {
       setDownloadLoading(true);
       // Create a temporary link element
       const link = document.createElement('a');
-      link.href = videoData.DowloadURL;
+      link.href = videoData.DownloadURL;
       link.download = `${videoData.title}.mp4`; // Set the filename
       document.body.appendChild(link);
       link.click();
@@ -68,11 +68,11 @@ const VideoInfo:React.FC<VideoDataType> = ({videoData}) => {
       <h2>Video Style :  {videoData?.videoStyle}</h2>
       <Button 
         onClick={handleDownload}
-        disabled={downloadLoading || !videoData?.DowloadURL}
+        disabled={downloadLoading || !videoData?.DownloadURL}
         className='w-full flex gap-2 font-semibold'
       >
         <DownloadIcon/> 
-        {downloadLoading ? 'Downloading...' : 'Export & Download'}
+        {!videoData?.DownloadURL ? 'Video is still rendering. Please check back shortly.' : 'Export & Download'}
       </Button>
       <Button onClick={handleUploadToYouTube} disabled={loading} className='w-full flex gap-2 text-black font-semibold'>
           <LucideYoutube className='text-[40px] text-red-500' /> {loading ? 'Uploading...' : 'Upload on YouTube'}

@@ -22,6 +22,6 @@ type CaptionItem = {
   caption_Style: string;
   caption_name: string;
   uid: string;
-  DowloadURL?: string;
+  DownloadURL?: string;
 };
 

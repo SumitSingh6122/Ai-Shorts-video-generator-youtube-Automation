@@ -166,7 +166,7 @@ export default function YoutubeUpload() {
               <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5  gap-5 ml-5 mt-2'>
                 {
                   UserVideoList?.map((vid,index)=>(
-                    <div className={`rounded-2xl p-1 border  ${vid.DowloadURL==formData.videoUrl ? 'border-white':''}`} key={index}  onClick={()=>{setFormData({...formData,videoUrl:vid.DowloadURL || ''});
+                    <div className={`rounded-2xl p-1 border  ${vid.DownloadURL==formData.videoUrl ? 'border-white':''}`} key={index}  onClick={()=>{setFormData({...formData,videoUrl:vid.DownloadURL || ''});
                     
                     }}>
                       <Image src={vid.image[0]} height={200} width={200} alt={vid.title}    className='w-full object-cover rounded-xl aspect-[2/3]' />
