@@ -1,32 +1,35 @@
-name: Render video
+name: Render and Upload Video
 on:
   workflow_dispatch:
     inputs:
       audioURL:
-        description: 'URL for the audio file'
+        description: 'Audio file URL'
         required: true
       captionJson:
         description: 'JSON array of captions'
         required: true
-        default: '[{"start":0,"end":2,"word":"Hello"}]'
       imageJson:
-        description: 'JSON array of image URLs'
+        description: 'JSON array of images'
         required: true
-        default: '[]'
       CaptionStyle:
-        description: 'JSON string of text styling'
+        description: 'JSON of caption style'
         required: true
-        default: '{}' 
+
+env:
+  CLOUDINARY_FOLDER: 'rendered-videos'
+
 jobs:
-  render:
-    name: Render video
+  render-and-upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-      - uses: actions/setup-node@main
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
+      
       - run: npm ci
+      
       - name: Create input props
         run: |
           echo '${{ toJson(github.event.inputs) }}' > inputs.json
@@ -38,9 +41,22 @@ jobs:
               CaptionStyle: (.CaptionStyle | fromjson)
             }
           }' inputs.json > input-props.json
+
       - name: Render video
-        run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
-      - uses: actions/upload-artifact@v4
+        run: npx remotion render src/index.tsx MyVideo out/video.mp4 --props=./input-props.json
+
+      - name: Upload to Cloudinary
+        id: cloudinary-upload
+        uses: jakejarvis/cloudinary-action@v2
         with:
-          name: rendered-video
-          path: out/video.mp4
+          cloudName: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          apiKey: ${{ secrets.CLOUDINARY_API_KEY }}
+          apiSecret: ${{ secrets.CLOUDINARY_API_SECRET }}
+          folder: ${{ env.CLOUDINARY_FOLDER }}
+          files: 'out/video.mp4'
+
+      - name: Set output
+        run: echo "CLOUDINARY_URL=${{ steps.cloudinary-upload.outputs.secure_url }}" >> $GITHUB_ENV
+
+    outputs:
+      cloudinaryUrl: ${{ env.CLOUDINARY_URL }}
