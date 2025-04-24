@@ -6,9 +6,9 @@ on:
         description: 'URL for the audio file'
         required: true
       captionJson:
-        description: 'JSON array of captions (e.g., [{start: 0, end: 2, word: "Hello"}, ...])'
+        description: 'JSON array of captions'
         required: true
-        default: '[{"start":0,"end":2,"word":"Hello"},{"start":2,"end":4,"word":"World"}]'
+        default: '[{"start":0,"end":2,"word":"Hello"}]'
       imageJson:
         description: 'JSON array of image URLs'
         required: true
@@ -16,7 +16,7 @@ on:
       CaptionStyle:
         description: 'JSON string of text styling'
         required: true
-        default: ''
+        default: '{}' 
 jobs:
   render:
     name: Render video
@@ -24,20 +24,23 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-node@main
-      - run: npm i
-      # Create input-props.json with proper structure
-      - run: |
+        with:
+          node-version: '18'
+      - run: npm ci
+      - name: Create input props
+        run: |
           echo '${{ toJson(github.event.inputs) }}' > inputs.json
           jq '{
             videoData: {
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
-              image: (.imageJson | fromjson)
+              image: (.imageJson | fromjson),
+              CaptionStyle: (.CaptionStyle | fromjson)
             }
           }' inputs.json > input-props.json
-      # Render with correct composition ID
-      - run: npx remotion render MyVideo out/video.mp4 --props="./input-props.json"
+      - name: Render video
+        run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
       - uses: actions/upload-artifact@v4
         with:
-          name: out.mp4
+          name: rendered-video
           path: out/video.mp4
