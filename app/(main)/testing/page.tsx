@@ -2,7 +2,6 @@
 import { useState } from 'react';
 
 export default function VideoGenerator() {
-  const [jobId, setJobId] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +12,6 @@ export default function VideoGenerator() {
     setVideoUrl(null);
 
     try {
-      // Example test data
       const response = await fetch('/api/render-video', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -25,10 +23,12 @@ export default function VideoGenerator() {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to start render');
-      
-      const { jobId, checkUrl } = await response.json();
-      setJobId(jobId);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to start render');
+      }
+
+      const { jobId } = await response.json();
       pollStatus(jobId);
 
     } catch (err) {
@@ -42,7 +42,7 @@ export default function VideoGenerator() {
       const response = await fetch(`/api/job/${encodeURIComponent(jobId)}`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Status check failed: ${response.status}`);
       }
 
       const { status, url, error } = await response.json();
@@ -58,6 +58,7 @@ export default function VideoGenerator() {
       }
     } catch (err) {
       setStatus('error');
+      console.log(err);
       setError('Failed to check status');
     }
   };
@@ -67,22 +68,36 @@ export default function VideoGenerator() {
       <button 
         onClick={startRender}
         disabled={status === 'loading'}
+        style={{ padding: '10px 20px', background: '#0070f3', color: 'white' }}
       >
         {status === 'loading' ? 'Generating...' : 'Generate Video'}
       </button>
 
       {videoUrl && (
-        <div>
-          <video src={videoUrl} controls style={{ width: '100%', marginTop: 20 }} />
-          <p>
-            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
-              Direct Video Link
+        <div style={{ marginTop: 20 }}>
+          <video 
+            src={videoUrl} 
+            controls 
+            style={{ width: '100%', maxWidth: 720 }}
+          />
+          <p style={{ marginTop: 10 }}>
+            <a
+              href={videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#0070f3' }}
+            >
+              Open video in new tab
             </a>
           </p>
         </div>
       )}
 
-      {error && <div style={{ color: 'red', marginTop: 20 }}>Error: {error}</div>}
+      {error && (
+        <div style={{ color: 'red', marginTop: 20 }}>
+          Error: {error}
+        </div>
+      )}
     </div>
   );
 }

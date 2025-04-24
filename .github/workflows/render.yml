@@ -1,3 +1,4 @@
+# .github/workflows/video-production-pipeline.yml
 name: Video Production Pipeline
 
 on:
@@ -17,23 +18,23 @@ on:
         required: true
 
 env:
-    CLOUDINARY_FOLDER: 'rendered-videos'
-    CLOUDINARY_CLOUD_NAME: 'dk75dh0nv'
-    CLOUDINARY_API_KEY: '475864168871595'
-    CLOUDINARY_API_SECRET: '-CkPLllqq-nfCMVMMeRI1Z_SAwg'
+  CUSTOM_API_ENDPOINT: 'http://localhost:3000/testing/api/upload' 
 
 jobs:
   render-and-upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      
+
       - run: npm ci
-      
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Prepare Input Data
         run: |
           echo '${{ toJson(github.event.inputs) }}' > inputs.json
@@ -57,31 +58,20 @@ jobs:
           fi
           echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
 
-      - name: Install Dependencies
-        run: sudo apt-get install -y jq
-
-      - name: Upload to Cloudinary
+      - name: Send Video to API
         run: |
-          curl -X POST \
-            -F "file=@out/video.mp4" \
-            -F "folder=$CLOUDINARY_FOLDER" \
-            -F "upload_preset=ml_default" \
-            "https://api.cloudinary.com/v1_1/$CLOUDINARY_CLOUD_NAME/video/upload" \
-            -o response.json
+          curl -X POST "$CUSTOM_API_ENDPOINT" \
+            -H "Content-Type: multipart/form-data" \
+            -F "video=@out/video.mp4" \
+            -F "metadata=$(jq -c . < input-props.json)" \
+            -o api-response.json
 
           if [ $? -ne 0 ]; then
-            echo "❌ Cloudinary upload failed"
+            echo "❌ API upload failed"
             exit 1
           fi
 
-      - name: Extract Cloudinary URL
-        id: cloudinary
+      - name: Log API Response
         run: |
-          URL=$(jq -r '.secure_url' response.json)
-          echo "CLOUDINARY_URL=$URL" >> $GITHUB_ENV
-          echo "✅ Upload successful - URL: $URL"
-
-    outputs:
-      cloudinaryUrl: ${{ env.CLOUDINARY_URL }}
-
-      
+          echo "✅ API Response:"
+          cat api-response.json
