@@ -1,0 +1,43 @@
+name: Render video
+on:
+  workflow_dispatch:
+    inputs:
+      audioURL:
+        description: 'URL for the audio file'
+        required: true
+      captionJson:
+        description: 'JSON array of captions (e.g., [{start: 0, end: 2, word: "Hello"}, ...])'
+        required: true
+        default: '[{"start":0,"end":2,"word":"Hello"},{"start":2,"end":4,"word":"World"}]'
+      imageJson:
+        description: 'JSON array of image URLs'
+        required: true
+        default: '[]'
+      CaptionStyle:
+        description: 'JSON string of text styling'
+        required: true
+        default: ''
+jobs:
+  render:
+    name: Render video
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+      - run: npm i
+      # Create input-props.json with proper structure
+      - run: |
+          echo '${{ toJson(github.event.inputs) }}' > inputs.json
+          jq '{
+            videoData: {
+              audioURL: .audioURL,
+              captionJson: (.captionJson | fromjson),
+              image: (.imageJson | fromjson)
+            }
+          }' inputs.json > input-props.json
+      # Render with correct composition ID
+      - run: npx remotion render MyVideo out/video.mp4 --props="./input-props.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: out.mp4
+          path: out/video.mp4

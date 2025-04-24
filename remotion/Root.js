@@ -9,7 +9,7 @@ const videoData = {
     { start: 0, end: 2, word: 'Hello' },
     { start: 2, end: 4, word: 'World' },
   ]
-  ,// <-- make sure this gets real data before rendering
+  ,
   image: [],
 };
 
