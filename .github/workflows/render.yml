@@ -1,25 +1,26 @@
-name: Render and Upload Video
+name: Video Production Pipeline
+
 on:
   workflow_dispatch:
     inputs:
       audioURL:
-        description: 'Audio file URL'
+        description: 'URL of the audio file'
         required: true
       captionJson:
         description: 'JSON array of captions'
         required: true
       imageJson:
-        description: 'JSON array of images'
+        description: 'JSON array of image URLs'
         required: true
       CaptionStyle:
-        description: 'JSON of caption style'
+        description: 'JSON of text styling'
         required: true
 
 env:
-  CLOUDINARY_FOLDER: 'rendered-videos'
-  CLOUDINARY_CLOUD_NAME: 'dk75dh0nv'
-  CLOUDINARY_API_KEY: '475864168871595'
-  CLOUDINARY_API_SECRET: '-CkPLllqq-nfCMVMMeRI1Z_SAwg'
+    CLOUDINARY_FOLDER: 'rendered-videos'
+    CLOUDINARY_CLOUD_NAME: 'dk75dh0nv'
+    CLOUDINARY_API_KEY: '475864168871595'
+    CLOUDINARY_API_SECRET: '-CkPLllqq-nfCMVMMeRI1Z_SAwg'
 
 jobs:
   render-and-upload:
@@ -33,7 +34,7 @@ jobs:
       
       - run: npm ci
       
-      - name: Create input props
+      - name: Prepare Input Data
         run: |
           echo '${{ toJson(github.event.inputs) }}' > inputs.json
           jq '{
@@ -45,10 +46,10 @@ jobs:
             }
           }' inputs.json > input-props.json
 
-      - name: Render video
-        run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
+      - name: Render Video
+        run: npx remotion render src/index.tsx MyVideo out/video.mp4 --props=./input-props.json
 
-      - name: Verify render output
+      - name: Verify Render Output
         run: |
           if [ ! -f out/video.mp4 ]; then
             echo "❌ Render failed: No output file found"
@@ -56,7 +57,7 @@ jobs:
           fi
           echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: sudo apt-get install -y jq
 
       - name: Upload to Cloudinary
@@ -73,13 +74,14 @@ jobs:
             exit 1
           fi
 
-      - name: Get Cloudinary URL
+      - name: Extract Cloudinary URL
+        id: cloudinary
         run: |
-          echo "Cloudinary response:"
-          cat response.json
           URL=$(jq -r '.secure_url' response.json)
           echo "CLOUDINARY_URL=$URL" >> $GITHUB_ENV
           echo "✅ Upload successful - URL: $URL"
 
     outputs:
       cloudinaryUrl: ${{ env.CLOUDINARY_URL }}
+
+      

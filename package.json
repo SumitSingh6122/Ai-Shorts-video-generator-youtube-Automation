@@ -13,6 +13,7 @@
     "@deepgram/sdk": "^3.11.2",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google/generative-ai": "^0.24.0",
+    "@octokit/rest": "^21.1.1",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-scroll-area": "^1.2.3",
     "@radix-ui/react-select": "^2.1.6",

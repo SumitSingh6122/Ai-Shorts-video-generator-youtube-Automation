@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server';
 import { Octokit } from 'octokit';
 
-// Simple job store (replace with DB in production)
-const jobs = new Map<string, {
-  status: 'processing' | 'completed' | 'failed',
-  url?: string,
-  error?: string
-}>();
+type JobStatus = {
+  status: 'processing' | 'completed' | 'failed';
+  url?: string;
+  error?: string;
+};
+
+const jobs = new Map<string, JobStatus>();
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    // Validate input
+    // Validate required fields
     if (!body.audioURL || !body.captions?.length) {
       return NextResponse.json(
         { error: 'Missing required fields' },
@@ -20,14 +21,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Initialize GitHub client
     const octokit = new Octokit({ auth: process.env.GITHUB_PAT });
 
     // Trigger workflow
     const { data } = await octokit.rest.actions.createWorkflowDispatch({
       owner: process.env.GITHUB_REPO_OWNER!,
       repo: process.env.GITHUB_REPO_NAME!,
-      workflow_id: 'render.yml',
+      workflow_id: 'render-video.yml',
       ref: 'main',
       inputs: {
         audioURL: body.audioURL,
@@ -55,8 +55,8 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { pathname } = new URL(request.url);
-  const jobId = pathname.split('/').pop();
+  const url = new URL(request.url);
+  const jobId = url.pathname.split('/').pop();
 
   if (!jobId || !jobs.has(jobId)) {
     return NextResponse.json(
@@ -65,20 +65,36 @@ export async function GET(request: Request) {
     );
   }
 
+  // Update status from GitHub
+  if (jobs.get(jobId)?.status === 'processing') {
+    try {
+      const octokit = new Octokit({ auth: process.env.GITHUB_PAT });
+      const { data: run } = await octokit.rest.actions.getWorkflowRun({
+        owner: process.env.GITHUB_REPO_OWNER!,
+        repo: process.env.GITHUB_REPO_NAME!,
+        run_id: Number(jobId)
+      });
+
+      if (run.conclusion === 'success') {
+        const { data: artifacts } = await octokit.rest.actions.listWorkflowRunArtifacts({
+          owner: process.env.GITHUB_REPO_OWNER!,
+          repo: process.env.GITHUB_REPO_NAME!,
+          run_id: Number(jobId)
+        });
+        
+        const output = artifacts.artifacts.find(a => a.name === 'cloudinary-url');
+        if (output) {
+          jobs.set(jobId, { status: 'completed', url: output.archive_download_url });
+        }
+      } else if (run.conclusion === 'failure') {
+        jobs.set(jobId, { status: 'failed', error: 'Workflow failed' });
+      }
+    } catch (error) {
+      console.error('Status check failed:', error);
+    }
+  }
+
   return NextResponse.json(jobs.get(jobId));
 }
 
-// Webhook handler for GitHub Actions
-export async function PUT(request: Request) {
-  const { jobId, status, url, error } = await request.json();
-  
-  if (jobs.has(jobId)) {
-    jobs.set(jobId, {
-      status: status === 'success' ? 'completed' : 'failed',
-      url,
-      error
-    });
-  }
-  
-  return NextResponse.json({ success: true });
-}
+export const dynamic = 'force-dynamic';

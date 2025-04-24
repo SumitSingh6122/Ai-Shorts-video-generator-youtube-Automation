@@ -73,7 +73,11 @@ export function AppSidebar() {
                  </Link>
                </div>
           }
-       
+       <div className="mx-5 mt-10">
+            <Link href={'/testing'}>
+            <Button className="w-full">Testing</Button>
+            </Link>
+          </div>
         </SidebarGroup>
         <SidebarGroup />
         
