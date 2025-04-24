@@ -46,7 +46,7 @@ jobs:
           }' inputs.json > input-props.json
 
       - name: Render video
-        run: npx remotion render src/index.tsx MyVideo out/video.mp4 --props=./input-props.json
+        run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
       - name: Verify render output
         run: |
