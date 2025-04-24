@@ -17,6 +17,9 @@ on:
 
 env:
   CLOUDINARY_FOLDER: 'rendered-videos'
+  CLOUDINARY_CLOUD_NAME: 'dk75dh0nv'
+  CLOUDINARY_API_KEY: '475864168871595'
+  CLOUDINARY_API_SECRET: '-CkPLllqq-nfCMVMMeRI1Z_SAwg'
 
 jobs:
   render-and-upload:
@@ -45,18 +48,38 @@ jobs:
       - name: Render video
         run: npx remotion render src/index.tsx MyVideo out/video.mp4 --props=./input-props.json
 
-      - name: Upload to Cloudinary
-        id: cloudinary-upload
-        uses: jakejarvis/cloudinary-action@v2
-        with:
-          cloudName: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          apiKey: ${{ secrets.CLOUDINARY_API_KEY }}
-          apiSecret: ${{ secrets.CLOUDINARY_API_SECRET }}
-          folder: ${{ env.CLOUDINARY_FOLDER }}
-          files: 'out/video.mp4'
+      - name: Verify render output
+        run: |
+          if [ ! -f out/video.mp4 ]; then
+            echo "❌ Render failed: No output file found"
+            exit 1
+          fi
+          echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
 
-      - name: Set output
-        run: echo "CLOUDINARY_URL=${{ steps.cloudinary-upload.outputs.secure_url }}" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: sudo apt-get install -y jq
+
+      - name: Upload to Cloudinary
+        run: |
+          curl -X POST \
+            -F "file=@out/video.mp4" \
+            -F "folder=$CLOUDINARY_FOLDER" \
+            -F "upload_preset=ml_default" \
+            "https://api.cloudinary.com/v1_1/$CLOUDINARY_CLOUD_NAME/video/upload" \
+            -o response.json
+
+          if [ $? -ne 0 ]; then
+            echo "❌ Cloudinary upload failed"
+            exit 1
+          fi
+
+      - name: Get Cloudinary URL
+        run: |
+          echo "Cloudinary response:"
+          cat response.json
+          URL=$(jq -r '.secure_url' response.json)
+          echo "CLOUDINARY_URL=$URL" >> $GITHUB_ENV
+          echo "✅ Upload successful - URL: $URL"
 
     outputs:
       cloudinaryUrl: ${{ env.CLOUDINARY_URL }}
