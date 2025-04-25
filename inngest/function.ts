@@ -32,7 +32,7 @@ export const GenerateVideodata=inngest.createFunction(
     {id:'generate-video-data'},
     {event:'generate-video-data'},
     async({event,step})=>{
-        const {script,VideoStyle,Voice,CaptionStyle ,recordId}=event.data;
+        const {script,VideoStyle,Voice,recordId}=event.data;
         const convex=new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
         
 
@@ -152,44 +152,6 @@ export const GenerateVideodata=inngest.createFunction(
 
             }
         )
-
-
-      const RenderVideo=await step.run(
-        "render Video",
-        async()=>{ 
-          const response=await axios.post('https://video-rendring.onrender.com/api/render', {
-              inputProps: {videoData:{
-                audioURL: GenerateAudiofile,
-                captionJson:GenerateCaptionFile,
-                image:GenerateImages,
-                CaptionStyle:CaptionStyle,
-            }
-                
-              },
-            })
-           
-      if (!response.data.success) {
-        throw new Error(`Render failed: ${response.data.error}`);
-      }
-
-      return response.data.downloadUrl;
-    });
-
-    await step.run(
-      "UpdateDatabase_Url",
-      async()=>{ 
-        const res=await convex.mutation(api.videoData.saveVideoDownloadUrl,{
-          videoId:recordId,
-          url:RenderVideo
-        })
-     return res;
-
-      }
-  )
-
-           
-          
-      
 
       return "Executed Succesfully!";
     }

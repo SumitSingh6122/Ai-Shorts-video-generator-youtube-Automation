@@ -13,7 +13,10 @@ on:
         description: 'JSON array of image URLs'
         required: true
       CaptionStyle:
-        description: 'JSON of text styling'
+        description: 'JSON of text styling (as string)'
+        required: true
+      videoId:
+        description: 'ID of the video record in Convex'
         required: true
 
 jobs:
@@ -39,7 +42,7 @@ jobs:
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              CaptionStyle: (.CaptionStyle | fromjson)
+              CaptionStyle: (.CaptionStyle | fromjson | tojson)
             }
           }' inputs.json > input-props.json
 
@@ -60,7 +63,7 @@ jobs:
           CLOUDINARY_API_KEY: 475864168871595
           CLOUDINARY_API_SECRET: -CkPLllqq-nfCMVMMeRI1Z_SAwg
         run: |
-          npm install cloudinary
+          npm install cloudinary --legacy-peer-deps
           node -e "
           const cloudinary = require('cloudinary').v2;
           cloudinary.config({
@@ -86,6 +89,6 @@ jobs:
       - name: Notify Frontend
         run: |
           VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
-          curl -X POST "http://localhost:3000/api/webhook" \
+          curl -X POST "https://ai-shorts-video-gen.vercel.app/api/webhook" \
             -H "Content-Type: application/json" \
-            -d "{\"video_url\": \"$VIDEO_URL\"}"
+            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ inputs.videoId }}\"}"
