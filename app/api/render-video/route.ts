@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         videoId:body.videoId,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
-        CaptionStyle: JSON.stringify(body.captionStyle || {})
+        caption_Style: JSON.stringify(body.caption_Style || {})
       }
     });
 

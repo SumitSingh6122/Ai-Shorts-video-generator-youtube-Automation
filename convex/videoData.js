@@ -100,7 +100,6 @@ export const UserRenderVideo = query({
         .order('desc')
         .collect();
   
-      // JS-side filter: only videos with non-empty DownloadURL
       return videos.filter(
         (video) =>
           typeof video.DownloadURL === 'string' &&

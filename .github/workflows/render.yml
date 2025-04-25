@@ -12,7 +12,7 @@ on:
       imageJson:
         description: 'JSON array of image URLs'
         required: true
-      CaptionStyle:
+      caption_Style:
         description: 'JSON of text styling (as string)'
         required: true
       videoId:
@@ -42,7 +42,7 @@ jobs:
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              CaptionStyle: (.CaptionStyle | fromjson | tojson)
+              caption_Style: (.caption_Style | fromjson | tojson)
             }
           }' inputs.json > input-props.json
 

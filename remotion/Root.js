@@ -66,7 +66,7 @@ const videoData = {
     "https://firebasestorage.googleapis.com/v0/b/projects-2025-71366.firebasestorage.app/o/ai-guru-lab-images%2F1745160722130.png?alt=media&token=20bafffb-9439-4210-90e3-676b7c7a8973",
     "https://firebasestorage.googleapis.com/v0/b/projects-2025-71366.firebasestorage.app/o/ai-guru-lab-images%2F1745160720551.png?alt=media&token=7aff6f59-a2e9-4631-a8a0-84ca6dbbdfe4"
   ],
-  CaptionStyle: "text-yellow-400 text-4xl font-extrabold uppercase tracking-wide drop-shadow-md"
+  caption_Style: "youtuber"
 };
 
 

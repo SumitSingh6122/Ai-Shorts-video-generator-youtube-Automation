@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '@/app/styles/caption-styles.css'
+import '@/app/styles/caption-styles.css';
 
 const options = [
     {
