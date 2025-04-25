@@ -21,6 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
+      
       <body
         className={outfit.className}
       ><NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

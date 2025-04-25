@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       ref: 'main',
       inputs: {
         audioURL: body.audioURL,
+        videoId:body.videoId,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
         CaptionStyle: JSON.stringify(body.captionStyle || {})

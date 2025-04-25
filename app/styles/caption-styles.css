@@ -1,0 +1,145 @@
+.youtuber {
+  color: #facc15;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.supreme {
+  color: white;
+  font-size: 2.25rem;
+  font-weight: 700;
+  font-style: italic;
+  text-shadow: 0 25px 25px rgba(0, 0, 0, 0.15);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.neon {
+  color: #22c55e;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
+}
+
+.glitch {
+  color: #ec4899;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: skewX(12deg);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.fire {
+  color: #ef4444;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cyberpunk {
+  color: #22d3ee;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 0.5rem;
+  text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee;
+}
+
+.shadow {
+  color: #1f2937;
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-shadow: 0 25px 25px rgba(0, 0, 0, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.retro {
+  color: #f97316;
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-style: italic;
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.25rem 0.75rem;
+}
+
+.ghost {
+  color: white;
+  font-size: 2.25rem;
+  font-weight: 300;
+  opacity: 0.75;
+  font-style: italic;
+  background: transparent;
+  backdrop-filter: blur(4px);
+}
+
+.bubble {
+  color: #3b82f6;
+  font-size: 2.25rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.vibrant {
+  color: #7e22ce;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode {
+  color: white;
+  font-size: 2.25rem;
+  font-weight: 700;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.cartoon {
+  color: #eab308;
+  font-size: 2.25rem;
+  font-weight: 800;
+  padding: 0.25rem 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.metallic {
+  color: #d1d5db;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+.electric {
+  color: #60a5fa;
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  padding: 0.25rem 0.75rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+} 

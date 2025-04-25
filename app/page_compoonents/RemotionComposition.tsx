@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { VideoData } from '../type';
 import { AbsoluteFill, Audio, Img, interpolate, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
-
+import '../styles/caption-styles.css';
 interface RemotionProps {
   videoData: VideoData | null;
   setDurationInFrame?: (frame: number) => void;

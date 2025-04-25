@@ -1,64 +1,66 @@
 import React, { useState } from 'react'
+import '@/app/styles/caption-styles.css'
+
 const options = [
     {
       name: "Youtuber",
-      style: "text-yellow-400 text-4xl font-extrabold uppercase tracking-wide drop-shadow-md",
+      style: "youtuber",
     },
     {
       name: "Supreme",
-      style: "text-white text-4xl font-bold italic drop-shadow-2xl  px-3 py-1 rounded",
+      style: "supreme",
     },
     {
       name: "Neon",
-      style: "text-green-500 text-4xl font-extrabold uppercase tracking-widest shadow-lg neon-glow",
+      style: "neon",
     },
     {
       name: "Glitch",
-      style: "text-pink-500 text-4xl font-extrabold uppercase tracking-wide skew-x-3 animate-pulse",
+      style: "glitch",
     },
     {
       name: "Fire",
-      style: "text-red-500 text-4xl font-extrabold uppercase tracking-wider ",
+      style: "fire",
     },
     {
       name: "Cyberpunk",
-      style: "text-cyan-400 text-4xl font-extrabold tracking-widest  p-2  neon-glow",
+      style: "cyberpunk",
     },
     {
       name: "Shadow",
-      style: "text-white-800 text-4xl font-bold shadow-2xl  px-2 py-1 rounded-md",
+      style: "shadow",
     },
     {
       name: "Retro",
-      style: "text-orange-500 text-4xl font-extrabold italic drop-shadow-lg  px-3 py-1 ",
+      style: "retro",
     },
     {
       name: "Ghost",
-      style: "text-white text-4xl font-light opacity-75 italic bg-transparent backdrop-blur-sm",
+      style: "ghost",
     },
     {
       name: "Bubble",
-      style: "text-blue-500 text-4xl font-bold rounded-full px-4 py-2 shadow-lg",
+      style: "bubble",
     },
     {
       name: "Vibrant",
-      style: "text-purple-700 text-4xl font-extrabold uppercase tracking-wide drop-shadow-md   ",
+      style: "vibrant",
     },
     {
       name: "Dark Mode",
-      style: "text-white text-4xl font-bold  p-3 rounded-md shadow-xl ",
+      style: "dark-mode",
     },
     {
       name: "Cartoon",
-      style: "text-yellow-500 text-4xl font-extrabold   px-3 py-1  shadow-md",
+      style: "cartoon",
     },
     {
       name: "Metallic",
-      style: "text-gray-300 text-4xl font-extrabold uppercase tracking-wider  shadow-xl",
+      style: "metallic",
     },
     {
       name: "Electric",
-      style: "text-blue-400 text-4xl font-extrabold uppercase tracking-widest animate-pulse  px-3 py-1 ",
+      style: "electric",
     },
   ];
   
@@ -84,7 +86,6 @@ const Caption:React.FC<TopicProps>= ({onHandleInputChange}) => {
                         <h2 className={caption.style}>{caption.name}</h2>
                     </div>
                 ))
-
             }
         </div>
     </div>
