@@ -36,36 +36,36 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          # Create properly escaped JSON input
-          cat <<EOF > inputs.json
-          {
-            "audioURL": "${{ github.event.inputs.audioURL }}",
-            "captionJson": ${{ github.event.inputs.captionJson }},
-            "imageJson": ${{ github.event.inputs.imageJson }},
-            "caption_Style": "${{ toJson(github.event.inputs.caption_Style) }}",
-            "videoId": "${{ github.event.inputs.videoId }}"
-          }
-          EOF
+          # Create raw inputs file
+          echo '${{ toJson(github.event.inputs) }}' > raw-inputs.json
           
-          # Process with jq to handle all cases
+          # Process with jq to handle all cases safely
           jq '
           {
             videoData: {
               audioURL: .audioURL,
-              captionJson: (.captionJson | fromjson),
-              image: (.imageJson | fromjson),
+              captionJson: (try (.captionJson | fromjson) catch null,
+              image: (try (.imageJson | fromjson) catch null,
               caption_Style: (
-                try (.caption_Style | fromjson) catch 
-                try (.caption_Style | sub("^\"|\"$"; "")) catch 
-                .caption_Style
+                if (.caption_Style | type) == "string" then
+                  try (.caption_Style | fromjson) catch .caption_Style
+                else
+                  .caption_Style
+                end
               ),
               videoId: .videoId
             }
-          }' inputs.json > input-props.json
+          }' raw-inputs.json > input-props.json
           
-          # Debug: Show the final props
+          # Verify the output
+          if ! jq empty input-props.json; then
+            echo "❌ Failed to create valid input-props.json"
+            cat raw-inputs.json
+            exit 1
+          fi
+          
+          echo "✅ Final props:"
           cat input-props.json
-
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
