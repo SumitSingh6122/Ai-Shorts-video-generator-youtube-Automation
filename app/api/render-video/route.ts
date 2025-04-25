@@ -4,7 +4,7 @@ import { Octokit } from 'octokit';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
+    console.log(body);
     // Validate input
     if (!body.audioURL || !body.captions?.length) {
       return NextResponse.json(
@@ -26,10 +26,12 @@ export async function POST(request: Request) {
         videoId:body.videoId,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
-        caption_Style: JSON.stringify(body.caption_Style || {})
-      }
-    });
+        caption_Style: body.caption_Style || "default-style"
 
+      }
+      
+    });
+ 
     return NextResponse.json({
       message: 'GitHub Actions workflow triggered successfully',
     });

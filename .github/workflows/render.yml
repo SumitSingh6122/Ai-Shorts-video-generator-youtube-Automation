@@ -36,13 +36,19 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          echo '${{ toJson(github.event.inputs) }}' > inputs.json
+          echo '{
+            "audioURL": "${{ github.event.inputs.audioURL }}",
+            "captionJson": ${{ github.event.inputs.captionJson }},
+            "imageJson": ${{ github.event.inputs.imageJson }},
+            "caption_Style": "${{ github.event.inputs.caption_Style }}"
+          }' > inputs.json
+          
           jq '{
             videoData: {
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              caption_Style:.caption_Style 
+              caption_Style: (try (.caption_Style | fromjson) catch .caption_Style)
             }
           }' inputs.json > input-props.json
 
