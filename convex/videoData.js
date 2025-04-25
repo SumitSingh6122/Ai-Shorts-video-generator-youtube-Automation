@@ -89,3 +89,23 @@ export const GetTotalVideos=query(async({db})=>{
     },
   });
   
+export const UserRenderVideo = query({
+    args: {
+      uid: v.id('user')
+    },
+    handler: async (ctx, args) => {
+      const videos = await ctx.db
+        .query('videoData')
+        .filter(q => q.eq(q.field('uid'), args.uid))
+        .order('desc')
+        .collect();
+  
+      // JS-side filter: only videos with non-empty DownloadURL
+      return videos.filter(
+        (video) =>
+          typeof video.DownloadURL === 'string' &&
+          video.DownloadURL.trim() !== ''
+      );
+    }
+  });
+  

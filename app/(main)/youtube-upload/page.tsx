@@ -45,7 +45,7 @@ export default function YoutubeUpload() {
     }
     checkYouTubeConnection();
   }, [user, router]);
-   const UserVideoList=useQuery(api.videoData.GetUserVideos,user ? { uid: user._id as Id<"user"> } : "skip");
+   const UserVideoList=useQuery(api.videoData.UserRenderVideo,user ? { uid: user._id as Id<"user"> } : "skip");
   const checkYouTubeConnection = async () => {
     try {
       const response = await axios.get('/api/youtube/check-connection');
