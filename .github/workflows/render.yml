@@ -42,7 +42,7 @@ jobs:
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              caption_Style: (.caption_Style | fromjson | tojson)
+              caption_Style:.caption_Style 
             }
           }' inputs.json > input-props.json
 
