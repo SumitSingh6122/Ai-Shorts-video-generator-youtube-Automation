@@ -36,21 +36,35 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          echo '{
+          # Create properly escaped JSON input
+          cat <<EOF > inputs.json
+          {
             "audioURL": "${{ github.event.inputs.audioURL }}",
             "captionJson": ${{ github.event.inputs.captionJson }},
             "imageJson": ${{ github.event.inputs.imageJson }},
-            "caption_Style": "${{ github.event.inputs.caption_Style }}"
-          }' > inputs.json
+            "caption_Style": "${{ toJson(github.event.inputs.caption_Style) }}",
+            "videoId": "${{ github.event.inputs.videoId }}"
+          }
+          EOF
           
-          jq '{
+          # Process with jq to handle all cases
+          jq '
+          {
             videoData: {
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              caption_Style: (try (.caption_Style | fromjson) catch .caption_Style)
+              caption_Style: (
+                try (.caption_Style | fromjson) catch 
+                try (.caption_Style | sub("^\"|\"$"; "")) catch 
+                .caption_Style
+              ),
+              videoId: .videoId
             }
           }' inputs.json > input-props.json
+          
+          # Debug: Show the final props
+          cat input-props.json
 
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
