@@ -34,7 +34,11 @@ const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
         audioURL: videoData.audioURL,
         captions: videoData.captionJson,
         images: videoData.image,
-        caption_Style: videoData.caption_Style,
+        caption_Style: videoData.caption_Style || {
+          fontSize: '32px',
+          color: 'yellow',
+          fontWeight: 'bold',
+        },
         videoId:videoData._id, 
       });
 

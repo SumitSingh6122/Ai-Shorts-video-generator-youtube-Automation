@@ -4,27 +4,13 @@ import { Octokit } from 'octokit';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     if (!body.audioURL || !body.captions?.length) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
-    }
-
-    // Prepare caption style - handle both string and object cases
-    let captionStyle;
-    if (typeof body.caption_Style === 'string') {
-      try {
-        // If it's a JSON string, parse it
-        captionStyle = JSON.parse(body.caption_Style);
-      } catch {
-        // If not JSON, use as plain string
-        captionStyle = body.caption_Style;
-      }
-    } else {
-      captionStyle = body.caption_Style || "default-style";
     }
 
     // Trigger GitHub Action
@@ -37,12 +23,10 @@ export async function POST(request: Request) {
       ref: 'main',
       inputs: {
         audioURL: body.audioURL,
-        videoId: body.videoId,
+        videoId:body.videoId,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
-        caption_Style: typeof captionStyle === 'string' 
-          ? captionStyle 
-          : JSON.stringify(captionStyle)
+        caption_Style: JSON.stringify(body.caption_Style || {})
       }
     });
 
