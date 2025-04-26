@@ -280,7 +280,7 @@ const BillingPage: React.FC = () => {
             <p className="text-gray-600 text-sm text-center">
               Watch 5 short ads and get{" "}
               <span className="font-bold text-green-600">1 free credit</span>
-         \
+         
             </p>
             <Button onClick={showRewardedAd} className="mt-2">
               Watch Ad ({adsWatched}/5)
@@ -299,7 +299,7 @@ const BillingPage: React.FC = () => {
             {creditPackages.map((pkg) => (
               <Card
                 key={pkg.name}
-                className={`flex flex-col justify-between p-6 hover:shadow-lg transition-shadow relative ${
+                className={`flex flex-col hover:border-blue-500 justify-between p-6 hover:shadow-lg transition-shadow relative ${
                   pkg.popular ? "border-2 border-blue-500" : ""
                 }`}
               >

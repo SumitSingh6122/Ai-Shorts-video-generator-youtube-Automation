@@ -7,6 +7,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Id } from '@/convex/_generated/dataModel';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 interface VideoDataType {
   videoData: VideoData & { _id: Id<'videoData'>; DownloadURL?: string };
@@ -14,7 +15,7 @@ interface VideoDataType {
 
 const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
   const [isRendering, setIsRendering] = useState(false);
-
+  const navigate=useRouter()
   const handleDownload = async () => {
     if (!videoData) {
       toast.error('Missing video data. Cannot start rendering.');
@@ -91,7 +92,7 @@ const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
         )}
 
         <Button
-          onClick={() => {}}
+          onClick={() =>navigate.push('/youtube-upload')}
           
           className="w-full flex gap-2 text-black font-semibold"
         >
