@@ -2,24 +2,18 @@
 import { VideoData } from '@/app/type';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { ArrowLeft, DownloadIcon, LucideYoutube } from 'lucide-react';
+import { ArrowLeft, DownloadIcon, LucideYoutube, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
-
 import { Id } from '@/convex/_generated/dataModel';
 import { toast } from 'react-toastify';
 
-
 interface VideoDataType {
-  videoData: VideoData & { _id: Id<'videoData'> }; // Include Convex ID
+  videoData: VideoData & { _id: Id<'videoData'>; DownloadURL?: string };
 }
 
 const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
-  
-  const [downloadLoading, setDownloadLoading] = useState(false);
-  
-
-
+  const [isRendering, setIsRendering] = useState(false);
 
   const handleDownload = async () => {
     if (!videoData) {
@@ -28,33 +22,37 @@ const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
     }
 
     try {
-      setDownloadLoading(true);
-
+      setIsRendering(true);
+      
       const response = await axios.post('/api/render-video', {
         audioURL: videoData.audioURL,
         captions: videoData.captionJson,
         images: videoData.image,
-        caption_Style: videoData.caption_Style || {
-          fontSize: '32px',
-          color: 'yellow',
-          fontWeight: 'bold',
-        },
-        videoId:videoData._id, 
+        caption_Style: videoData.caption_Style || '',
+        videoId: videoData._id,
       });
 
-      toast.success('Rendering started! You will be notified when the video is ready.');
-
+      toast.success('Rendering started! The download option will appear when ready.');
       console.log('Render API response:', response.data);
     } catch (error) {
       console.error('Failed to trigger render:', error);
       toast.error('Failed to start rendering.');
     } finally {
-      setDownloadLoading(false);
+      if(videoData?.DownloadURL){
+        setIsRendering(false);
+      }
     }
   };
 
-  const handleUploadToYouTube = async () => {
-   
+  const handleDownloadVideo = () => {
+    if (!videoData.DownloadURL) return;
+    
+    const link = document.createElement('a');
+    link.href = videoData.DownloadURL;
+    link.download = `${videoData.title || 'video'}.mp4`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -68,21 +66,37 @@ const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
         <h2 className="mt-5">Project Name: {videoData?.title}</h2>
         <p>Video Script: {videoData?.script}</p>
         <h2>Video Style: {videoData?.videoStyle}</h2>
-       
+        
+        {videoData?.DownloadURL ? (
+          <Button
+            onClick={handleDownloadVideo}
+            className="w-full flex gap-2 font-semibold"
+          >
+            <DownloadIcon />
+            Download Video
+          </Button>
+        ) : (
+          <Button
+            onClick={handleDownload}
+            disabled={isRendering}
+            className="w-full flex gap-2 font-semibold"
+          >
+            {isRendering ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <DownloadIcon />
+            )}
+            {isRendering ? 'Starting Render...' : 'Export & Download'}
+          </Button>
+        )}
+
         <Button
-          onClick={handleDownload}
-          disabled={downloadLoading}
-          className="w-full flex gap-2 font-semibold"
-        >
-          <DownloadIcon />
-          {downloadLoading ? 'Rendering...' : 'Export & Download'}
-        </Button>
-        <Button
-          onClick={handleUploadToYouTube}
+          onClick={() => {}}
+          
           className="w-full flex gap-2 text-black font-semibold"
         >
           <LucideYoutube className="text-[40px] text-red-500" />
-         Upload on YouTube
+          Upload on YouTube
         </Button>
       </div>
     </div>
