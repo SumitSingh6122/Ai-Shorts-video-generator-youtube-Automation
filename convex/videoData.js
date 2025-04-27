@@ -113,7 +113,7 @@ export const UserRenderVideo = query({
     },
     handler: async (ctx, args) => {
       const allVideos = await ctx.db.query('videoData')
-        .filter((video) => video.userId === args.uid)
+        .filter((video) => video.userId !== args.uid)
         .collect(); 
       return allVideos;
     },
