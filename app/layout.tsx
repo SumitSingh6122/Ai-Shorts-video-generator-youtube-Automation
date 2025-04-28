@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { ToastContainer } from 'react-toastify';
 import { VisitorTracker } from "./(main)/_component/VisitorTracker";
+import Script from "next/script";
 
 
 
@@ -32,6 +33,11 @@ export default function RootLayout({
 
         </ConvexClientProvider>
         </NextThemesProvider>
+        <Script 
+        type='script/text'
+          src="//pl26505041.profitableratecpm.com/dd/d9/77/ddd97717cc73647752aae6bae32f1447.js"
+          
+        />
       </body>
     </html>
   );

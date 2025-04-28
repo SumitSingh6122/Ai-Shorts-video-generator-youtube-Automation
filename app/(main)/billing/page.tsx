@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 
 
+
 declare global {
   interface Window {
     Razorpay: {
@@ -208,33 +209,41 @@ const BillingPage: React.FC = () => {
   };
 
   const showRewardedAd = () => {
-    if (!window.aiptag || !window.aipPlayer) {
-      toast.error("Ad player not ready yet");
-      return;
-    }
+    
+    window.open(
+      'https://www.profitableratecpm.com/a0zzey5tf?key=a3d697c62ad52e652182a0039f5333e2',
+      '_blank'
+    );
 
-    window.aiptag.cmd.player.push(() => {
-      window.aipPlayer("video-ad", {
-        AD_WIDTH: 960,
-        AD_HEIGHT: 540,
-        AD_FULLSCREEN: true,
-        callback: () => {
+
+   
+    
+     
+      const checkIfClosed = setInterval(() => {
+        
+          clearInterval(checkIfClosed);
+        
           setAdsWatched((prev) => {
             const newCount = prev + 1;
-
-            if (newCount >= 5) {
+    
+            if (newCount >= 10) {
               addFreeCredit();
               toast.success("🎁 You've earned 1 free credit!");
               return 0;
+            } else {
+              toast.success(`Watched ${newCount}/10 ads`);
+              return newCount;
             }
-
-            toast.info(`Watched ${newCount}/5 ads`);
-            return newCount;
           });
-        },
-      });
-    });
-  };
+        
+      }, 1000); 
+    };
+    
+
+  
+  
+        
+     
 
   const addFreeCredit = async () => {
     await updateCredits({
@@ -247,8 +256,7 @@ const BillingPage: React.FC = () => {
     <>
       {/* Razorpay + AdInPlay */}
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <Script src="https://cdn.adinplay.com/static/js/adplayer.js" strategy="lazyOnload" />
-
+     
       <div className="py-5 px-5">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-center items-center gap-4 mb-6">
@@ -278,23 +286,16 @@ const BillingPage: React.FC = () => {
           <div className="flex flex-col items-center justify-center gap-2 p-6 mb-10 border border-dashed rounded-lg">
             <p className="text-lg font-semibold">🎁 Earn Free Credit</p>
             <p className="text-gray-600 text-sm text-center">
-              Watch 5 short ads and get{" "}
+              click 10 link ads and get{" "}
               <span className="font-bold text-green-600">1 free credit</span>
          
             </p>
             <Button onClick={showRewardedAd} className="mt-2">
-              Watch Ad ({adsWatched}/5)
+              Watch Ad ({adsWatched}/ 10)
             </Button>
           </div>
 
-          {/* Ad Container (Hidden) */}
-          <div id="video-ad" >     <Script
-  strategy="afterInteractive"
-  src="https://js.onclckmn.com/static/onclicka.js"
-  data-admpid="318307"
-/></div>
-
-          {/* Credit Packages */}
+         
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {creditPackages.map((pkg) => (
               <Card
