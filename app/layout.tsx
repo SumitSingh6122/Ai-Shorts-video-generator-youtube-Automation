@@ -22,7 +22,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      
+      <head>
+        {/* Preload the script if needed */}
+        <link 
+          rel="preload" 
+          href="//pl26505041.profitableratecpm.com/dd/d9/77/ddd97717cc73647752aae6bae32f1447.js" 
+          as="script" 
+        />
+        
+        {/* Script with proper attributes */}
+        <Script
+          src="//pl26505041.profitableratecpm.com/dd/d9/77/ddd97717cc73647752aae6bae32f1447.js"
+          strategy="afterInteractive" // or "lazyOnLoad"
+          
+        />
+      </head>
       <body
         className={outfit.className}
       ><NextThemesProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
@@ -33,11 +47,7 @@ export default function RootLayout({
 
         </ConvexClientProvider>
         </NextThemesProvider>
-        <Script 
-        type='script/text'
-          src="//pl26505041.profitableratecpm.com/dd/d9/77/ddd97717cc73647752aae6bae32f1447.js"
-          
-        />
+       
       </body>
     </html>
   );
