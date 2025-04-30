@@ -36,22 +36,16 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          # Safely handle JSON input using jq parameters
           jq -n \
-            --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --arg captionJson "${{ github.event.inputs.captionJson }}" \
-            --arg imageJson "${{ github.event.inputs.imageJson }}" \
-            --arg caption_Style "${{ github.event.inputs.caption_Style }}" \
-            --arg videoId "${{ github.event.inputs.videoId }}" \
-            '{
-              videoData: {
-                audioURL: $audioURL,
-                captionJson: ($captionJson | try fromjson catch []),
-                image: ($imageJson | try fromjson catch []),
-                caption_Style: ($caption_Style | try fromjson catch "youtuber"),
-                videoId: $videoId
-              }
-            }' > input-props.json
+            --arg a "${{ github.event.inputs.audioURL }}" \
+            --arg c "${{ github.event.inputs.captionJson }}" \
+            --arg i "${{ github.event.inputs.imageJson }}" \
+            --arg s "${{ github.event.inputs.caption_Style }}" \
+            --arg v "${{ github.event.inputs.videoId }}" \
+            '{videoData:{audioURL:$a,captionJson:($c|try fromjson catch[]),image:($i|try fromjson catch[]),caption_Style:($s|try fromjson catch"youtuber"),videoId:$v}}' > input-props.json
+      
+      - name: Validate JSON
+        run: jq empty input-props.json
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
