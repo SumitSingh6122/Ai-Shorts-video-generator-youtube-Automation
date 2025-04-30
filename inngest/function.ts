@@ -49,7 +49,7 @@ export const GenerateVideodata=inngest.createFunction(
             {
               responseType: 'arraybuffer',
               headers: {
-                'xi-api-key': 'sk_b7ae580ccebf5625700b185d4457a00b9280cfaa2ab9ff9c',
+                'xi-api-key': 'sk_030fff6ffca6b63ee31bf1f23710e667bc91aaddda6366d4',
                 'Content-Type': 'application/json',
               },
             }
