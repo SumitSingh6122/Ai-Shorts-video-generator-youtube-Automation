@@ -42,7 +42,7 @@ jobs:
               audioURL: .audioURL,
               captionJson: (.captionJson | fromjson),
               image: (.imageJson | fromjson),
-              caption_Style: .caption_Style
+              caption_Style: (.caption_Style| fromjson)
             }
           }' inputs.json > input-props.json
       - name: Render Video
