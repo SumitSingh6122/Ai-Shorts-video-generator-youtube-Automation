@@ -36,15 +36,23 @@ jobs:
 
       - name: Prepare Input Data
         run: |
+          # Write raw inputs to file
           echo '${{ toJson(github.event.inputs) }}' > inputs.json
-          jq '{
+          
+          # Process with proper JSON parsing
+          jq '
+          {
             videoData: {
               audioURL: .audioURL,
-              captionJson: (.captionJson | fromjson),
-              image: (.imageJson | fromjson),
-              caption_Style: .caption_Style
+              captionJson: (.captionJson | try fromjson catch []),
+              image: (.imageJson | try fromjson catch []),
+              caption_Style: (.caption_Style | try fromjson catch "youtuber"),
+              videoId: .videoId
             }
           }' inputs.json > input-props.json
+
+      - name: Validate JSON
+        run: jq empty input-props.json
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
