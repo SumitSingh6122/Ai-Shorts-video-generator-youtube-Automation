@@ -36,21 +36,25 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          jq -n \
-            --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
-            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
-            --arg caption_Style '${{ github.event.inputs.caption_Style }}' \
-            --arg videoId "${{ github.event.inputs.videoId }}" \
-            '{
-              videoData: {
-                audioURL: $audioURL,
-                captionJson: $captionJson,
-                image: $imageJson,
-                caption_Style: $caption_Style,
-                videoId: $videoId
-              }
-            }' > input-props.json
+          # Create inputs.json with proper JSON formatting
+          echo '{
+            "audioURL": "${{ github.event.inputs.audioURL }}",
+            "captionJson": ${{ github.event.inputs.captionJson }},
+            "imageJson": ${{ github.event.inputs.imageJson }},
+            "caption_Style": "${{ github.event.inputs.caption_Style }}",
+            "videoId": "${{ github.event.inputs.videoId }}"
+          }' | jq '.captionJson |= fromjson | .imageJson |= fromjson' > inputs.json
+          
+          # Generate final props file
+          jq '{
+            videoData: {
+              audioURL: .audioURL,
+              captionJson: .captionJson,
+              image: .imageJson,
+              caption_Style: .caption_Style,
+              videoId: .videoId
+            }
+          }' inputs.json > input-props.json
 
       - name: Validate JSON
         run: jq empty input-props.json

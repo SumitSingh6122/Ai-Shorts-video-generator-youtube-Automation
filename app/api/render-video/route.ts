@@ -24,9 +24,10 @@ export async function POST(request: Request) {
       inputs: {
         audioURL: body.audioURL,
         videoId:body.videoId,
+        caption_Style:body.caption_Style,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
-        caption_Style:"youtuber"
+        
       }
     });
 
