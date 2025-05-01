@@ -37,14 +37,19 @@ jobs:
       - name: Prepare Input Data
         run: |
           jq -n \
-            --arg a "${{ github.event.inputs.audioURL }}" \
-            --arg c "${{ github.event.inputs.captionJson }}" \
-            --arg i "${{ github.event.inputs.imageJson }}" \
-            --arg s "${{ github.event.inputs.caption_Style }}" \
-            '{videoData:{audioURL:$a,captionJson:($c|try fromjson catch []),image:($i|try fromjson catch []),caption_Style:($s|try fromjson catch "youtuber")}}' > input-props.json
-
-      - name: Validate JSON
-        run: jq empty input-props.json
+            --arg audioURL "${{ inputs.audioURL }}" \
+            --arg caption_Style "${{ inputs.caption_Style }}" \
+            --argjson captionJson '${{ inputs.captionJson }}' \
+            --argjson image '${{ inputs.imageJson }}' \
+            '{
+              videoData: {
+                audioURL: $audioURL,
+                captionJson: $captionJson,
+                image: $image,
+                caption_Style: $caption_Style
+              }
+            }' > input-props.json
+      
 
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
