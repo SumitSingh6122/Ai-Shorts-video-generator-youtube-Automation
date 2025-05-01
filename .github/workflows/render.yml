@@ -36,15 +36,20 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          echo '${{ toJson(github.event.inputs) }}' > inputs.json
-          jq '{
-            videoData: {
-              audioURL: .audioURL,
-              captionJson: (.captionJson | fromjson),
-              image: (.imageJson | fromjson),
-              caption_Style: .caption_Style
-            }
-          }' inputs.json > input-props.json
+          # Use jq to handle JSON safely
+          jq -n \
+            --arg audioURL "${{ github.event.inputs.audioURL }}" \
+            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
+            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
+            --arg caption_Style "youtuber" \
+            '{
+              videoData: {
+                audioURL: $audioURL,
+                captionJson: $captionJson,
+                image: $imageJson,
+                caption_Style: $caption_Style
+              }
+            }' > input-props.json
 
       
       - name: Render Video
