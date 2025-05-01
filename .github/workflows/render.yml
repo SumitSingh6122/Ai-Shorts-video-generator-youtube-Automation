@@ -41,10 +41,11 @@ jobs:
             --arg c "${{ github.event.inputs.captionJson }}" \
             --arg i "${{ github.event.inputs.imageJson }}" \
             --arg s "${{ github.event.inputs.caption_Style }}" \
-            --arg v "${{ github.event.inputs.videoId }}" \
-            '{videoData:{audioURL:$a,captionJson:($c|try_fromjson_catch[]),image:($i|try_fromjson_catch[]),caption_Style:($s|try_fromjson_catch"youtuber"),videoId:$v}}' > input-props.json
+            '{videoData:{audioURL:$a,captionJson:($c|try fromjson catch []),image:($i|try fromjson catch []),caption_Style:($s|try fromjson catch "youtuber")}}' > input-props.json
+
       - name: Validate JSON
         run: jq empty input-props.json
+
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
@@ -55,6 +56,7 @@ jobs:
             exit 1
           fi
           echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
+
       - name: Upload to Cloudinary
         env:
           CLOUDINARY_CLOUD_NAME: dk75dh0nv
@@ -78,13 +80,10 @@ jobs:
             require('fs').writeFileSync('cloudinary-response.json', JSON.stringify(result));
           });
           "
-      - name: Set Output
-        run: |
-          VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
-          echo "video_url=$VIDEO_URL" >> $GITHUB_OUTPUT
+
       - name: Notify Frontend
         run: |
           VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
           curl -X POST "https://ai-shorts-video-gen.vercel.app/api/webhook" \
             -H "Content-Type: application/json" \
-            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ inputs.videoId }}\"}"
+            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ github.event.inputs.videoId }}\"}"
