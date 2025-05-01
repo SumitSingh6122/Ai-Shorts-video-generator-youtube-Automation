@@ -31,25 +31,19 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
       - name: Prepare Input Data
         run: |
-          jq -n \
-            --arg audioURL "${{ inputs.audioURL }}" \
-            --arg caption_Style "${{ inputs.caption_Style }}" \
-            --argjson captionJson '${{ inputs.captionJson }}' \
-            --argjson image '${{ inputs.imageJson }}' \
-            '{
-              videoData: {
-                audioURL: $audioURL,
-                captionJson: $captionJson,
-                image: $image,
-                caption_Style: $caption_Style
-              }
-            }' > input-props.json
-      
+          echo '{
+            "videoData": {
+              "audioURL": "${{ github.event.inputs.audioURL }}",
+              "captionJson": '"${{ github.event.inputs.captionJson }}"',
+              "image": '"${{ github.event.inputs.imageJson }}"',
+              "caption_Style": '"${{ github.event.inputs.caption_Style }}"'
+            }
+          }' > input-props.json
+
+      - name: Validate JSON
+        run: jq empty input-props.json
 
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
