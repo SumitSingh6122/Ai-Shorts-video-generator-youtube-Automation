@@ -36,20 +36,21 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          # Write raw inputs to file
-          echo '${{ toJson(github.event.inputs) }}' > inputs.json
-          
-          # Process with proper JSON parsing
-          jq '
-          {
-            videoData: {
-              audioURL: .audioURL,
-              captionJson: (.captionJson | try fromjson catch []),
-              image: (.imageJson | try fromjson catch []),
-              caption_Style: (.caption_Style | try fromjson catch "youtuber"),
-              videoId: .videoId
-            }
-          }' inputs.json > input-props.json
+          jq -n \
+            --arg audioURL "${{ github.event.inputs.audioURL }}" \
+            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
+            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
+            --argjson caption_Style '${{ github.event.inputs.caption_Style }}' \
+            --arg videoId "${{ github.event.inputs.videoId }}" \
+            '{
+              videoData: {
+                audioURL: $audioURL,
+                captionJson: $captionJson,
+                image: $imageJson,
+                caption_Style: $caption_Style,
+                videoId: $videoId
+              }
+            }' > input-props.json
 
       - name: Validate JSON
         run: jq empty input-props.json

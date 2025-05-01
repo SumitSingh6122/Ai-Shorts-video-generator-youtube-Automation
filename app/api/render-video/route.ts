@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         videoId:body.videoId,
         captionJson: JSON.stringify(body.captions),
         imageJson: JSON.stringify(body.images || []),
-        caption_Style:body.caption_Style || 'youtuber'
+        caption_Style:typeof body.caption_Style === 'string' ? JSON.stringify(body.caption_Style) : JSON.stringify(body.caption_Style || 'youtuber')
       }
     });
 
