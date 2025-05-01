@@ -40,7 +40,7 @@ jobs:
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
             --argjson captionJson '${{ github.event.inputs.captionJson }}' \
             --argjson imageJson '${{ github.event.inputs.imageJson }}' \
-            --argjson caption_Style '${{ github.event.inputs.caption_Style }}' \
+            --arg caption_Style '${{ github.event.inputs.caption_Style }}' \
             --arg videoId "${{ github.event.inputs.videoId }}" \
             '{
               videoData: {
