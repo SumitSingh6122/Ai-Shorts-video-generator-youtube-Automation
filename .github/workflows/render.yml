@@ -31,24 +31,20 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Prepare Input Data
         run: |
-          jq -n \
-          --arg audioURL "${{ github.event.inputs.audioURL }}" \
-          --argjson captionJson "${{ github.event.inputs.captionJson }}" \
-          --argjson image "${{ github.event.inputs.imageJson }}" \
-          --argjson caption_Style "${{ github.event.inputs.caption_Style }}" \
-          '{videoData: {
-            audioURL: $audioURL,
-            captionJson: $captionJson,
-            image: $image,
-            caption_Style: $caption_Style
-          }}' > input-props.json
-          
-
-      - name: Validate JSON
-        run: jq empty input-props.json
-
+          echo '${{ toJson(github.event.inputs) }}' > inputs.json
+          jq '{
+            videoData: {
+              audioURL: .audioURL,
+              captionJson: (.captionJson | fromjson),
+              image: (.imageJson | fromjson),
+              caption_Style: .caption_Style
+            }
+          }' inputs.json > input-props.json
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
@@ -59,7 +55,6 @@ jobs:
             exit 1
           fi
           echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
-
       - name: Upload to Cloudinary
         env:
           CLOUDINARY_CLOUD_NAME: dk75dh0nv
@@ -83,10 +78,13 @@ jobs:
             require('fs').writeFileSync('cloudinary-response.json', JSON.stringify(result));
           });
           "
-
+      - name: Set Output
+        run: |
+          VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
+          echo "video_url=$VIDEO_URL" >> $GITHUB_OUTPUT
       - name: Notify Frontend
         run: |
           VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
           curl -X POST "https://ai-shorts-video-gen.vercel.app/api/webhook" \
             -H "Content-Type: application/json" \
-            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ github.event.inputs.videoId }}\"}"
+            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ inputs.videoId }}\"}"
