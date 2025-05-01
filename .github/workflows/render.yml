@@ -36,15 +36,21 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          # Create inputs.json with proper JSON formatting
-          echo '{
-            "audioURL": "${{ github.event.inputs.audioURL }}",
-            "captionJson": ${{ github.event.inputs.captionJson }},
-            "imageJson": ${{ github.event.inputs.imageJson }},
-            "caption_Style": "${{ github.event.inputs.caption_Style }}",
-            "videoId": "${{ github.event.inputs.videoId }}"
-          }' | jq '.captionJson |= fromjson | .imageJson |= fromjson' > inputs.json
-          
+          # Create inputs.json using jq for safe JSON handling
+          jq -n \
+            --arg audioURL "${{ github.event.inputs.audioURL }}" \
+            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
+            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
+            --arg caption_Style "youtuber" \
+            --arg videoId "${{ github.event.inputs.videoId }}" \
+            '{
+              audioURL: $audioURL,
+              captionJson: $captionJson,
+              imageJson: $imageJson,
+              caption_Style: $caption_Style,
+              videoId: $videoId
+            }' > inputs.json
+      
           # Generate final props file
           jq '{
             videoData: {
