@@ -33,14 +33,18 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          echo '{
-            "videoData": {
-              "audioURL": "${{ github.event.inputs.audioURL }}",
-              "captionJson": '"${{ github.event.inputs.captionJson }}"',
-              "image": '"${{ github.event.inputs.imageJson }}"',
-              "caption_Style": '"${{ github.event.inputs.caption_Style }}"'
-            }
-          }' > input-props.json
+          jq -n \
+          --arg audioURL "${{ github.event.inputs.audioURL }}" \
+          --argjson captionJson "${{ github.event.inputs.captionJson }}" \
+          --argjson image "${{ github.event.inputs.imageJson }}" \
+          --argjson caption_Style "${{ github.event.inputs.caption_Style }}" \
+          '{videoData: {
+            audioURL: $audioURL,
+            captionJson: $captionJson,
+            image: $image,
+            caption_Style: $caption_Style
+          }}' > input-props.json
+          
 
       - name: Validate JSON
         run: jq empty input-props.json
