@@ -39,8 +39,8 @@ jobs:
           # Use jq to handle JSON safely
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
-            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
+            --argjson captionJson "${{ github.event.inputs.captionJson }}" \
+            --argjson imageJson "${{ github.event.inputs.imageJson }}" \
             --arg caption_Style "youtuber" \
             '{
               videoData: {
