@@ -33,22 +33,25 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get install -y jq
-
       - name: Prepare Input Data
         run: |
+          echo '${{ github.event.inputs.captionJson }}' > caption.json
+          echo '${{ github.event.inputs.imageJson }}' > image.json
+      
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --arg captionJson "${{ github.event.inputs.captionJson }}" \
-            --arg imageJson "${{ github.event.inputs.imageJson }}" \
             --arg caption_Style "${{ github.event.inputs.caption_Style }}" \
+            --slurpfile captionJson caption.json \
+            --slurpfile imageJson image.json \
             '{
               videoData: {
                 audioURL: $audioURL,
-                captionJson: ($captionJson | fromjson),
-                image: ($imageJson | fromjson),
+                captionJson: $captionJson[0],
+                image: $imageJson[0],
                 caption_Style: $caption_Style
               }
             }' > input-props.json
+      
 
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
