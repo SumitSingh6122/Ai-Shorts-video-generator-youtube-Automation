@@ -33,22 +33,25 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get install -y jq
+      
       - name: Prepare Input Data
         run: |
-          echo '${{ github.event.inputs.captionJson }}' > caption.json
-          echo '${{ github.event.inputs.imageJson }}' > image.json
-      
+          # Validate and format JSON inputs
+          echo '${{ github.event.inputs.captionJson }}' | jq '.' > caption.json
+          echo '${{ github.event.inputs.imageJson }}' | jq '.' > image.json
+          
+
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --arg caption_Style "${{ github.event.inputs.caption_Style }}" \
             --slurpfile captionJson caption.json \
             --slurpfile imageJson image.json \
+            --arg caption_Style "${{ github.event.inputs.caption_Style }}" \
             '{
               videoData: {
                 audioURL: $audioURL,
                 captionJson: $captionJson[0],
                 image: $imageJson[0],
-                caption_Style: $caption_Style
+                caption_Style: $captionStyle
               }
             }' > input-props.json
       
