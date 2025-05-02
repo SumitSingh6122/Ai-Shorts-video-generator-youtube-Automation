@@ -39,23 +39,25 @@ jobs:
           # Validate and format JSON inputs
           echo '${{ github.event.inputs.captionJson }}' | jq . > caption.json
           echo '${{ github.event.inputs.imageJson }}' | jq . > image.json
-          echo '${{ github.event.inputs.caption_Style }}' | jq . > style.json
           
+          # Create caption style as plain text
+          echo "${{ github.event.inputs.caption_Style }}" > style.txt
+
           # Generate input-props.json
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
             --slurpfile captionJson caption.json \
             --slurpfile imageJson image.json \
-            --slurpfile captionStyle style.json \
+            --arg captionStyle "$(cat style.txt)" \
             '{
               videoData: {
                 audioURL: $audioURL,
                 captionJson: $captionJson[0],
                 image: $imageJson[0],
-                caption_Style: $captionStyle[0]
+                caption_Style: $captionStyle
               }
             }' > input-props.json
-          
+
           # Verify generated config
           cat input-props.json
       
