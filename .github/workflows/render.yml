@@ -36,24 +36,23 @@ jobs:
       
       - name: Prepare Input Data
         run: |
-          # Write inputs to files and validate JSON
+          # Validate and format JSON inputs
           echo '${{ github.event.inputs.captionJson }}' | jq . > caption.json
           echo '${{ github.event.inputs.imageJson }}' | jq . > image.json
-          
+          echo '${{ github.event.inputs.caption_Style }}' | jq . > style.json
           
           # Generate input-props.json
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
             --slurpfile captionJson caption.json \
             --slurpfile imageJson image.json \
-            --arg captionStyle "youtuber" \
-            
+            --slurpfile captionStyle style.json \
             '{
               videoData: {
                 audioURL: $audioURL,
                 captionJson: $captionJson[0],
                 image: $imageJson[0],
-                caption_Style: $captionStyle
+                caption_Style: $captionStyle[0]
               }
             }' > input-props.json
           
