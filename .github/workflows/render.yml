@@ -49,9 +49,7 @@ jobs:
                 caption_Style: $caption_Style
               }
             }' > input-props.json
-             
 
-      
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 
@@ -62,6 +60,7 @@ jobs:
             exit 1
           fi
           echo "✅ Render successful - File size: $(du -h out/video.mp4 | cut -f1)"
+
       - name: Upload to Cloudinary
         env:
           CLOUDINARY_CLOUD_NAME: dk75dh0nv
@@ -70,28 +69,37 @@ jobs:
         run: |
           npm install cloudinary --legacy-peer-deps
           node -e "
-          const cloudinary = require('cloudinary').v2;
-          cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET
-          });
-          cloudinary.uploader.upload('out/video.mp4', { resource_type: 'video', folder: 'renders', overwrite: true }, (error, result) => {
-            if (error) {
-              console.error('❌ Cloudinary upload failed:', error);
-              process.exit(1);
-            }
-            console.log('✅ Cloudinary upload successful:', result.secure_url);
-            require('fs').writeFileSync('cloudinary-response.json', JSON.stringify(result));
-          });
+            const cloudinary = require('cloudinary').v2;
+            const fs = require('fs');
+            cloudinary.config({
+              cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+              api_key: process.env.CLOUDINARY_API_KEY,
+              api_secret: process.env.CLOUDINARY_API_SECRET
+            });
+            cloudinary.uploader.upload('out/video.mp4', {
+              resource_type: 'video',
+              folder: 'renders',
+              overwrite: true
+            }, (error, result) => {
+              if (error) {
+                console.error('❌ Cloudinary upload failed:', error);
+                process.exit(1);
+              }
+              console.log('✅ Cloudinary upload successful:', result.secure_url);
+              fs.writeFileSync('cloudinary-response.json', JSON.stringify(result));
+            });
           "
+
       - name: Set Output
+        id: set_output
         run: |
           VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
+          echo "video_url=$VIDEO_URL"
           echo "video_url=$VIDEO_URL" >> $GITHUB_OUTPUT
+
       - name: Notify Frontend
         run: |
           VIDEO_URL=$(jq -r .secure_url cloudinary-response.json)
           curl -X POST "https://ai-shorts-video-gen.vercel.app/api/webhook" \
             -H "Content-Type: application/json" \
-            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ inputs.videoId }}\"}"
+            -d "{\"video_url\": \"$VIDEO_URL\", \"videoId\": \"${{ github.event.inputs.videoId }}\"}"
