@@ -36,12 +36,11 @@ jobs:
 
       - name: Prepare Input Data
         run: |
-          # Use jq to handle JSON safely
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
-            --argjson captionJson '${{ github.event.inputs.captionJson }}' \
-            --argjson imageJson '${{ github.event.inputs.imageJson }}' \
-            --arg caption_Style "youtuber" \
+            --argjson captionJson "${{ github.event.inputs.captionJson }}" \
+            --argjson imageJson "${{ github.event.inputs.imageJson }}" \
+            --arg caption_Style "${{ github.event.inputs.caption_Style }}" \
             '{
               videoData: {
                 audioURL: $audioURL,
