@@ -36,19 +36,29 @@ jobs:
       
       - name: Prepare Input Data
         run: |
+          # Write inputs to files and validate JSON
+          echo '${{ github.event.inputs.captionJson }}' | jq . > caption.json
+          echo '${{ github.event.inputs.imageJson }}' | jq . > image.json
+          
+          
+          # Generate input-props.json
           jq -n \
-          --arg audioURL "${{ github.event.inputs.audioURL }}" \
-          --arg caption_Style "youtuber" \
-          --arg captionJson '${{ github.event.inputs.captionJson }}' \
-          --arg imageJson '${{ github.event.inputs.imageJson }}' \
-          '{
-          videoData: {
-          audioURL: $audioURL,
-          captionJson: ($captionJson | fromjson),
-          image: ($imageJson | fromjson),
-          caption_Style: $caption_Style
-          }
-           }' > input-props.json
+            --arg audioURL "${{ github.event.inputs.audioURL }}" \
+            --slurpfile captionJson caption.json \
+            --slurpfile imageJson image.json \
+            --arg captionStyle "youtuber" \
+            
+            '{
+              videoData: {
+                audioURL: $audioURL,
+                captionJson: $captionJson[0],
+                image: $imageJson[0],
+                caption_Style: $captionStyle
+              }
+            }' > input-props.json
+          
+          # Verify generated config
+          cat input-props.json
       
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
