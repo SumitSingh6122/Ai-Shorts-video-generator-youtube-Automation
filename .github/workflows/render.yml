@@ -49,7 +49,7 @@ jobs:
                 caption_Style: $caption_Style
               }
             }' > input-props.json
-              }' > input-props.json
+             
 
       
       - name: Render Video
