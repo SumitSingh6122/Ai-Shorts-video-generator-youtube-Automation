@@ -6,14 +6,14 @@ on:
       audioURL:
         description: 'URL of the audio file'
         required: true
-      captionJson:
-        description: 'JSON array of captions'
+      captionJsonUrl:
+        description: 'URL of the uploaded captions JSON file'
         required: true
       imageJson:
         description: 'JSON array of image URLs'
         required: true
       caption_Style:
-        description: 'JSON of text styling (as string)'
+        description: 'Caption style string'
         required: true
       videoId:
         description: 'ID of the video record in Convex'
@@ -33,17 +33,15 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get install -y jq
-      
+
       - name: Prepare Input Data
         run: |
-          # Validate and format JSON inputs
-          echo '${{ github.event.inputs.captionJson }}' | jq . > caption.json
+          echo "📥 Downloading captions JSON from: ${{ github.event.inputs.captionJsonUrl }}"
+          curl -L "${{ github.event.inputs.captionJsonUrl }}" -o caption.json
+
           echo '${{ github.event.inputs.imageJson }}' | jq . > image.json
-          
-          # Create caption style as plain text
           echo "${{ github.event.inputs.caption_Style }}" > style.txt
 
-          # Generate input-props.json
           jq -n \
             --arg audioURL "${{ github.event.inputs.audioURL }}" \
             --slurpfile captionJson caption.json \
@@ -58,9 +56,9 @@ jobs:
               }
             }' > input-props.json
 
-          # Verify generated config
+          echo "✅ Final input-props.json:"
           cat input-props.json
-      
+
       - name: Render Video
         run: npx remotion render remotion/index.ts MyVideo out/video.mp4 --props=./input-props.json
 

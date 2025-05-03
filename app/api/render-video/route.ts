@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Octokit } from 'octokit';
 
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
 
     // Trigger GitHub Action
     const octokit = new Octokit({ auth: process.env.GITHUB_PAT });
-
+    console.log(JSON.stringify(body.captions));
     await octokit.rest.actions.createWorkflowDispatch({
       owner: process.env.GITHUB_REPO_OWNER!,
       repo: process.env.GITHUB_REPO_NAME!,

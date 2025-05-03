@@ -24,7 +24,7 @@ const VideoInfo: React.FC<VideoDataType> = ({ videoData }) => {
 
     try {
       setIsRendering(true);
-      
+  
       const response = await axios.post('/api/render-video', {
         audioURL: videoData.audioURL,
         captions: videoData.captionJson,
