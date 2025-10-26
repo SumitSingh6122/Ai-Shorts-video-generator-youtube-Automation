@@ -108,14 +108,18 @@ export const UserRenderVideo = query({
     }
   });
   export const ReturnAllVideos = query({
-    args: {
-      uid: v.id('user'),
-    },
-    handler: async (ctx, args) => {
-      const allVideos = await ctx.db.query('videoData')
-        .filter((video) => video.userId !== args.uid)
-        .collect(); 
-      return allVideos;
-    },
-  });
+  args: {
+    uid: v.id('user'),
+  },
+  handler: async (ctx, args) => {
+    const allVideos = await ctx.db.query('videoData')
+      .filter((video) => 
+        video.userId !== args.uid && 
+        Array.isArray(video.image) && video.image.length > 0
+      )
+      .collect(); 
+    return allVideos;
+  },
+});
+
   

@@ -216,8 +216,6 @@ const BillingPage: React.FC = () => {
     );
 
 
-   
-    
      
       const checkIfClosed = setInterval(() => {
         
@@ -240,9 +238,6 @@ const BillingPage: React.FC = () => {
     };
     
 
-  
-  
-        
      
 
   const addFreeCredit = async () => {

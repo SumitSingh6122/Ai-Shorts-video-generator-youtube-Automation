@@ -85,8 +85,7 @@ export const RemotionRoot= () => {
         width={720}
         height={1280}
         defaultProps={{
-          videoData:videoData,
-          setDurationInFrame: () => {}, 
+          videoData:videoData
         }}
       />
     </>
